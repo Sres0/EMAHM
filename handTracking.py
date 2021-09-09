@@ -37,8 +37,8 @@ class HandDetection():
 
     def isolate(self, img):
         hsvim = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower = np.array([00, 50, 50], dtype = "uint8")
-        upper = np.array([200, 120, 150], dtype = "uint8")
+        lower = np.array([0, 0, 233], dtype = "uint8")
+        upper = np.array([180, 139, 255], dtype = "uint8")
         skinRegionHSV = cv2.inRange(hsvim, lower, upper)
         blurred = cv2.blur(skinRegionHSV, (2,2))
         _,thresh = cv2.threshold(blurred,0,255,cv2.THRESH_BINARY)
