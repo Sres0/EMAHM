@@ -5,9 +5,9 @@ max_value = 255
 max_value_H = 360//2
 low_H = 0
 low_S = 0
-low_V = 0
+low_V = 235 #0
 high_H = max_value_H
-high_S = max_value
+high_S = 240 #max_value
 high_V = max_value
 window_capture_name = 'Video Capture'
 window_detection_name = 'Object Detection'
@@ -60,12 +60,18 @@ def on_high_V_thresh_trackbar(val):
     high_V = max(high_V, low_V+1)
     cv.setTrackbarPos(high_V_name, window_detection_name, high_V)
 
+def contour_hand(name, frame, thresh):
+    contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+    contours = max(contours, key=lambda x: cv.contourArea(x))
+    cv.drawContours(frame, [contours], -1, (0,255,0), 2)
+    cv.imshow(name, frame)
+
 parser = argparse.ArgumentParser(description='Code for Thresholding Operations using inRange tutorial.')
 parser.add_argument('--camera', help='Camera divide number.', default=0, type=int)
 args = parser.parse_args()
 
 cap = cv.VideoCapture(args.camera)
-cv.namedWindow(window_capture_name)
+# cv.namedWindow(window_capture_name)
 cv.namedWindow(window_detection_name)
 cv.resizeWindow(window_detection_name, 300, 150)
 cv.createTrackbar(low_H_name, window_detection_name , low_H, max_value_H, on_low_H_thresh_trackbar)
@@ -77,15 +83,21 @@ cv.createTrackbar(high_V_name, window_detection_name , high_V, max_value, on_hig
 
 while True:
     
-    ret, frame = cap.read()
+    _, frame = cap.read()
     if frame is None:
         break
     frame_HSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     frame_threshold = cv.inRange(frame_HSV, (low_H, low_S, low_V), (high_H, high_S, high_V))
+    blurred_frame = cv.GaussianBlur(frame, (5,5), 0)
+    blurred_frame_HSV = cv.cvtColor(blurred_frame, cv.COLOR_BGR2HSV)
+    blurred_frame_threshold = cv.inRange(blurred_frame_HSV, (low_H, low_S, low_V), (high_H, high_S, high_V))
     
     cv.imshow(window_capture_name, frame)
-    cv.imshow(window_detection_name, frame_threshold)
+    # cv.imshow(window_detection_name, frame_threshold)
+    cv.imshow(window_detection_name, blurred_frame_threshold)
+    contour_hand(window_capture_name, frame, blurred_frame_threshold)
+    # cv.imshow('3rd', frame_HSV)
     
-    key = cv.waitKey(30)
+    key = cv.waitKey(1000)
     if key == ord('q') or key == 27:
         break
