@@ -14,5 +14,7 @@ bitwise_and = cv.bitwise_and(rectangle, circle)
 cv.imshow('Bitwise AND', bitwise_and) # Intersected regions
 
 ### OR ###
+bitwise_or = cv.bitwise_or(rectangle, circle)
+cv.imshow('Bitwise OR', bitwise_or) # Intersected regions
 
 cv.waitKey(0)

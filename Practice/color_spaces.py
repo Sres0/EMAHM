@@ -2,19 +2,19 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 
 img = cv.imread('images/UV_img_sample.jpg')
-# cv.imshow('UV', img) # Normal format is BGR
+cv.imshow('UV', img) # Normal format is BGR
 
 ### GRAY ###
-# gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-# cv.imshow('B&W', gray)
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+cv.imshow('B&W', gray)
 
 ### HSV ###
-# hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-# cv.imshow('HSV', hsv)
+hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+cv.imshow('HSV', hsv)
 
 ### LAB ###
-# lab = cv.cvtColor(img, cv.COLOR_BGR2LAB)
-# cv.imshow('LAB', lab)
+lab = cv.cvtColor(img, cv.COLOR_BGR2LAB)
+cv.imshow('LAB', lab)
 
 ### RGB ###
 # plt.imshow(img)
