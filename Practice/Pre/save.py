@@ -1,6 +1,8 @@
 import cv2 as cv
 
-cap = cv.VideoCapture(0, cv.CAP_DSHOW)
+cap = cv.VideoCapture(1, cv.CAP_DSHOW)
+cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
 def video():
     while True:
@@ -9,7 +11,9 @@ def video():
         if cv.waitKey(1) & 0xFF == ord('q'):
             return frame
 
-result=cv.imwrite(r'Practice\Pre\1.png', video())
+i = 25.3
+
+result=cv.imwrite(r'Practice\Pre\\'+f'{i}.png', video())
 if result==True:
   print('File saved successfully')
 else:
