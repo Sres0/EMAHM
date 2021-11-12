@@ -2,3 +2,4 @@ https://stackoverflow.com/questions/63272798/python-split-an-image-based-on-whit
 https://stackoverflow.com/questions/65788972/find-hand-contours-only-python-opencv
 https://stackoverflow.com/questions/65788972/find-hand-contours-only-python-opencv
 https://learnopencv.com/color-spaces-in-opencv-cpp-python/
+https://scikit-image.org/docs/dev/api/skimage.metrics.html?highlight=ssim#skimage.metrics.structural_similarity
