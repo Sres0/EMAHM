@@ -3,21 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
-i = 44
+i = 70
+j = i-2
 
 path = 'Processing/Post/Bank/Imgs/hand_test_'+str(i)+'.png'
+path2 = 'Processing/Post/Bank/Imgs/hand_test_'+str(j)+'.png'
 
 small_blur = (2, 2)
 medium_blur = (5, 5)
 
 img = cv.imread(path)
 
-def createImg():
+def createImg(img=img):
     w = int(1280/3)
     h = int(720/3)
     return cv.resize(img, (w,h))
 
 img1=createImg()
+cv.imshow('Sin gel', createImg(cv.imread(path2)))
 cv.imshow('Original', img1)
 
 def contour(mask, img, color, title, show=1):
@@ -77,26 +80,26 @@ def histogram(img):
 
 ##### HSV #####
 
-# hsv = cv.cvtColor(img1, cv.COLOR_BGR2HSV)
-# # cv.imshow('HSV', hsv)
-# lower = np.array([0, 0, 100], dtype="uint8") # upper & lower pxl intensities for skin
-# upper = np.array([150, 150, 255], dtype="uint8")
+hsv = cv.cvtColor(img1, cv.COLOR_BGR2HSV)
+# cv.imshow('HSV', hsv)
+lower = np.array([0, 0, 100], dtype="uint8") # upper & lower pxl intensities for skin
+upper = np.array([150, 150, 255], dtype="uint8")
 
-# mask = cv.inRange(hsv, lower, upper) # mask for normal img
-# blurredMask = blur(mask, small_blur, 'Mascara difuminada', 1)
-# hsvBlurred = cv.blur(hsv, small_blur) # Blur img with a 2x2 matrix
-# blurredImgMask = cv.inRange(hsvBlurred, lower, upper) # mask for blurred img
-# blurredImgMask = blur(blurredImgMask, small_blur, 'Mascara de imagen difuminada', 1)
-# blurredImgNMask = blur(blurredImgMask, small_blur, 'Mascara difuminada de imagen difuminada', 1)
+mask = cv.inRange(hsv, lower, upper) # mask for normal img
+blurredMask = blur(mask, small_blur, 'Mascara difuminada', 1)
+hsvBlurred = cv.blur(hsv, small_blur) # Blur img with a 2x2 matrix
+blurredImgMask = cv.inRange(hsvBlurred, lower, upper) # mask for blurred img
+blurredImgMask = blur(blurredImgMask, small_blur, 'Mascara de imagen difuminada', 1)
+blurredImgNMask = blur(blurredImgMask, small_blur, 'Mascara difuminada de imagen difuminada', 1)
 
-# img2 = createImg()
-# img3 = createImg()
+img2 = createImg()
+img3 = createImg()
 
-# contour(blurredMask, img1, (255, 255, 255), 'Contornos mascara difuminada')
-# contour(blurredImgMask, img2, (255, 255, 255), 'Contornos mascara de imagen difuminada')
-# contour(blurredImgNMask, img3, (255, 255, 255), 'Contornos mascara difuminada de imagen difuminada')
+contour(blurredMask, img1, (255, 255, 255), 'Contornos mascara difuminada')
+contour(blurredImgMask, img2, (255, 255, 255), 'Contornos mascara de imagen difuminada')
+contour(blurredImgNMask, img3, (255, 255, 255), 'Contornos mascara difuminada de imagen difuminada')
 
-# cv.waitKey()
+cv.waitKey()
 
 ##### CHANNELS #####
 
@@ -166,146 +169,147 @@ def histogram(img):
 ##### COMBINATION #####
 
 # hsv = cv.cvtColor(img1, cv.COLOR_BGR2HSV)
-gray = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
-# hsv = blur(hsv, small_blur, 'HSV', 1)
-# cv.imshow('Original', img1)
-# cv.imshow('HSV', hsv)
-# cv.imshow('Grayscale', gray)
+# gray = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
+# # hsv = blur(hsv, small_blur, 'HSV', 1)
+# # cv.imshow('Original', img1)
+# # cv.imshow('HSV', hsv)
+# # cv.imshow('Grayscale', gray)
 
-# Plot #
-# b, g, r = cv.split(img1)
-# h, s, v = cv.split(hsv)
+# # Plot #
+# # b, g, r = cv.split(img1)
+# # h, s, v = cv.split(hsv)
 
-# Histogram #
+# # Histogram #
 
-# threeDPlot(img1, b, g, r, 'Blue', 'Green', 'Red')
-# threeDPlot(hsv, h, s, v, 'Hue', 'Saturation', 'Value')
-# threeDHistogram(img1, 'blue', 'green', 'red')
-# threeDHistogram(hsv, 'hue', 'saturation', 'value')
-# histogram(gray)
+# # threeDPlot(img1, b, g, r, 'Blue', 'Green', 'Red')
+# # threeDPlot(hsv, h, s, v, 'Hue', 'Saturation', 'Value')
+# # threeDHistogram(img1, 'blue', 'green', 'red')
+# # threeDHistogram(hsv, 'hue', 'saturation', 'value')
+# # histogram(gray)
 
-# Mask #
+# # Mask #
 
-img2 = createImg()
-img3 = createImg()
-img4 = createImg()
+# # img2 = createImg()
+# # img3 = createImg()
+# # img4 = createImg()
 
-maskGray = blur(gray, medium_blur, 'blurred gray')
+# maskGray = blur(gray, medium_blur, 'blurred gray')
 
-# lower = np.array([115, 150, 0], dtype='uint8') # 112, 145, 25
-# lower = np.array([112, 145, 25], dtype='uint8') # 112, 145, 25
-# upper = np.array([140, 198, 255], dtype='uint8') # 142, 200, 200
+# # lower = np.array([115, 150, 0], dtype='uint8') # 112, 145, 25
+# # lower = np.array([112, 145, 25], dtype='uint8') # 112, 145, 25
+# # upper = np.array([140, 198, 255], dtype='uint8') # 142, 200, 200
 
-# maskHSV = cv.inRange(hsv, lower, upper)
-maskGray = threshold(maskGray, 110, 255, 'Mascara gris binary', cv.THRESH_BINARY_INV, 0) # 105, 240
-# maskGray = threshold(gray, 110, 255, 'Mascara gris otsu', cv.THRESH_OTSU) # 105, 240
-# cv.imshow('Mascara HSV', maskHSV)
-# cv.imshow('Mascara gris', maskGray)
+# # maskHSV = cv.inRange(hsv, lower, upper)
+# maskGray = threshold(maskGray, 110, 255, 'Mascara gris binary', cv.THRESH_BINARY_INV, 0) # 105, 240
+# # maskGray = threshold(gray, 110, 255, 'Mascara gris otsu', cv.THRESH_OTSU) # 105, 240
+# # cv.imshow('Mascara HSV', maskHSV)
+# # cv.imshow('Mascara gris', maskGray)
 
-# contour(maskHSV, img1, (255, 255, 255), 'Contorno mascara HSV')
-# contour(maskGray, img2, (255, 255, 255), 'Contorno mascara gris')
+# # contour(maskHSV, img1, (255, 255, 255), 'Contorno mascara HSV')
+# # contour(maskGray, img2, (255, 255, 255), 'Contorno mascara gris')
 
-# Morphology #
+# # Morphology #
 
-def morph(opt, src, title, kernel, show=0, iterations=1):
+# def morph(opt, src, title, kernel, show=0, iterations=1):
     
-    if opt == 'e':
-        mask = cv.erode(src, kernel, iterations=iterations)
-    elif opt == 'd':
-        mask = cv.dilate(src, kernel, iterations=iterations)
-    elif opt == 'o':
-        mask = cv.morphologyEx(src, cv.MORPH_OPEN, kernel)
-    else:
-        mask = cv.morphologyEx(src, cv.MORPH_CLOSE, kernel)
-    if show == 1:
-        cv.imshow(title, mask)
-        contour(mask, img1, (255, 255, 255), 'Contorno '+title)
-    return mask
+#     if opt == 'e':
+#         mask = cv.erode(src, kernel, iterations=iterations)
+#     elif opt == 'd':
+#         mask = cv.dilate(src, kernel, iterations=iterations)
+#     elif opt == 'o':
+#         mask = cv.morphologyEx(src, cv.MORPH_OPEN, kernel)
+#     else:
+#         mask = cv.morphologyEx(src, cv.MORPH_CLOSE, kernel)
+#     if show == 1:
+#         cv.imshow(title, mask)
+#         contour(mask, img1, (255, 255, 255), 'Contorno '+title)
+#     return mask
 
-small_kernel = np.ones((2,2),np.uint8)
-smedium_kernel = np.ones((3,3),np.uint8)
-medium_kernel = np.ones((5,5),np.uint8)
+# small_kernel = np.ones((2,2),np.uint8)
+# smedium_kernel = np.ones((3,3),np.uint8)
+# medium_kernel = np.ones((5,5),np.uint8)
 
-# maskedGray = morph('d', maskGray, 'mascara gris dilatada', medium_kernel, 0)
-# maskedGray = morph('e', maskedGray, 'mascara gris erosionada', medium_kernel, 0)
-# maskedGray = morph('o', maskedGray, 'mascara gris abierta', small_kernel, 0)
-maskedGray = morph('c', maskGray, 'mascara gris cerrada', medium_kernel, 0)
-# maskGrayDilate = morph('d', maskGrayErode, 'mascara gris dilatada', small_kernel, 1, iterations=2)
+# # maskedGray = morph('d', maskGray, 'mascara gris dilatada', medium_kernel, 0)
+# # maskedGray = morph('e', maskedGray, 'mascara gris erosionada', medium_kernel, 0)
+# # maskedGray = morph('o', maskedGray, 'mascara gris abierta', small_kernel, 0)
+# maskedGray = morph('c', maskGray, 'mascara gris cerrada', medium_kernel, 0)
+# # maskGrayDilate = morph('d', maskGrayErode, 'mascara gris dilatada', small_kernel, 1, iterations=2)
 
-# maskedGray = blur(maskGray, (4,4), 'erode', 1)
-# maskGrayDilate = morph('d', maskedGray, 'mascara gris dilatada', small_kernel, 0, iterations=100)
-# maskedGray = 255 - maskedGray # invert
+# # maskedGray = blur(maskGray, (4,4), 'erode', 1)
+# # maskGrayDilate = morph('d', maskedGray, 'mascara gris dilatada', small_kernel, 0, iterations=100)
+# # maskedGray = 255 - maskedGray # invert
 
-# maskedGray = threshold(maskedGray, 110, 255, 'Mascara gris thresh', cv.THRESH_BINARY, 1)
+# # maskedGray = threshold(maskedGray, 110, 255, 'Mascara gris thresh', cv.THRESH_BINARY, 1)
 
-cropped = cv.bitwise_and(img1, img1, mask=cv.bitwise_not(maskedGray))
+# cropped = cv.bitwise_and(img1, img1, mask=cv.bitwise_not(maskedGray))
 
-# GEL #
+# # GEL #
 
-# gray = cv.cvtColor(cropped, cv.COLOR_BGR2GRAY)
-hsv = cv.cvtColor(cropped, cv.COLOR_BGR2HSV)
-# lab = cv.cvtColor(cropped, cv.COLOR_BGR2LAB)
-# b, g, r = cv.split(cropped)
-h, s, v = cv.split(hsv)
-# l, a, b_lab = cv.split(lab) # Another option is combining channels
+# # gray = cv.cvtColor(cropped, cv.COLOR_BGR2GRAY)
+# hsv = cv.cvtColor(cropped, cv.COLOR_BGR2HSV)
+# # lab = cv.cvtColor(cropped, cv.COLOR_BGR2LAB)
+# # b, g, r = cv.split(cropped)
+# h, s, v = cv.split(hsv)
+# # l, a, b_lab = cv.split(lab) # Another option is combining channels
 
-# cv.imshow('Recortada', cropped)
-# cv.imshow('HSV', hsv)
-# cv.imshow('Gris', gray)
-# cv.imshow('LAB', lab)
+# # cv.imshow('Recortada', cropped)
+# # cv.imshow('HSV', hsv)
+# # cv.imshow('Gris', gray)
+# # cv.imshow('LAB', lab)
 
-# cv.imshow('light', l)
-# cv.imshow('A', a)
-# cv.imshow('B', b_lab)
+# # cv.imshow('light', l)
+# # cv.imshow('A', a)
+# # cv.imshow('B', b_lab)
 
-# Histograms #
+# # Histograms #
 
-# threeDHistogram(cropped, 'blue', 'green', 'red')
-# threeDHistogram(hsv, 'hue', 'saturation', 'value')
-# threeDHistogram(lab, 'Lightness', 'A color range', 'B color range')
-# histogram(gray)
+# # threeDHistogram(cropped, 'blue', 'green', 'red')
+# # threeDHistogram(hsv, 'hue', 'saturation', 'value')
+# # threeDHistogram(lab, 'Lightness', 'A color range', 'B color range')
+# # histogram(gray)
 
-# Masks #
+# # Masks #
 
-# greenMask = threshold(g, 190, 255, 'mascara verde', cv.THRESH_BINARY, 0)
-# blueMask = threshold(b, 245, 255, 'mascara azul', cv.THRESH_BINARY, 0)
-# redMask = threshold(r, 215, 255, 'mascara roja', cv.THRESH_BINARY, 0)
-# grayMask = threshold(gray, 200, 255, 'mascara gris', cv.THRESH_BINARY, 0)
-# aMask = threshold(a, 145, 255, 'mascara brillo', cv.THRESH_BINARY_INV, 0)
-hMask = threshold(h, 128, 255, 'mascara brillo', cv.THRESH_BINARY_INV, 0)
-# cv.imshow('hue mask', hMask)
-hMask = cv.bitwise_and(hMask, hMask, mask=cv.bitwise_not(maskedGray))
-# cv.imshow('hue mask 2', hMask)
+# # greenMask = threshold(g, 190, 255, 'mascara verde', cv.THRESH_BINARY, 0)
+# # blueMask = threshold(b, 245, 255, 'mascara azul', cv.THRESH_BINARY, 0)
+# # redMask = threshold(r, 215, 255, 'mascara roja', cv.THRESH_BINARY, 0)
+# # grayMask = threshold(gray, 200, 255, 'mascara gris', cv.THRESH_BINARY, 0)
+# # aMask = threshold(a, 145, 255, 'mascara brillo', cv.THRESH_BINARY_INV, 0)
+# hMask = threshold(h, 135, 255, 'mascara brillo', cv.THRESH_BINARY_INV, 0) # 128
+# # cv.imshow('hue mask', hMask)
+# hMask = cv.bitwise_and(hMask, hMask, mask=cv.bitwise_not(maskedGray))
+# # cv.imshow('hue mask 2', hMask)
 
-# Contours #
+# # Contours #
 
-img5 = createImg()
-contour(maskedGray, img1, (255, 255, 255), 'mascara', 0)
-contour(maskedGray, img2, (255, 255, 255), 'mascara', 0)
-contour(maskedGray, img3, (255, 255, 255), 'mascara', 0)
-contour(maskedGray, img5, (255, 255, 255), 'mascara', 0)
-# contour(greenMask, img1, (0, 255, 0), 'contorno mascara verde')
-# contour(grayMask, img2, (255, 255, 255), 'contorno mascara gris')
-# contour(blueMask, img3, (255, 0, 0), 'contorno mascara azul')
-# contour(redMask, img3, (0, 0, 255), 'contorno mascara roja')
-# contour(aMask, img3, (255, 255, 255), 'contorno mascara brillo')
-# contour(hMask, img4, (255, 255, 255), 'contorno mascara hue')
+# img5 = createImg()
+# # contour(cv.bitwise_not(maskedGray), img1, (255, 255, 255), 'mascara', 0)
+# # contour(maskedGray, img2, (255, 255, 255), 'mascara', 0)
+# # contour(maskedGray, img3, (255, 255, 255), 'mascara', 0)
+# # contour(maskedGray, img5, (255, 255, 255), 'mascara', 0)
+# # contour(greenMask, img1, (0, 255, 0), 'contorno mascara verde')
+# # contour(grayMask, img2, (255, 255, 255), 'contorno mascara gris')
+# # contour(blueMask, img3, (255, 0, 0), 'contorno mascara azul')
+# # contour(redMask, img3, (0, 0, 255), 'contorno mascara roja')
+# # contour(aMask, img3, (255, 255, 255), 'contorno mascara brillo')
+# # contour(hMask, img4, (255, 255, 255), 'contorno mascara hue')
 
-# Morphology #
+# # Morphology #
 
-maskedGel = blur(hMask, small_blur, 'blur gel', 1)
-# maskedGel = morph('e', hMask, 'mascara gel erosionada', small_kernel, 0)
-# maskedGel = morph('d', maskedGel, 'mascara gel dilatada', medium_kernel, 0)
-maskedGel = morph('c', maskedGel, 'mascara gel cerrada', small_kernel, 0)
-maskedGel = morph('o', maskedGel, 'mascara gel abierta', smedium_kernel, 0)
+# maskedGel = blur(hMask, small_blur, 'blur gel', 1)
+# # maskedGel = morph('e', hMask, 'mascara gel erosionada', small_kernel, 0)
+# # maskedGel = morph('d', maskedGel, 'mascara gel dilatada', small_kernel, 0)
+# # maskedGel = morph('c', maskedGel, 'mascara gel cerrada', small_kernel, 1)
+# # maskedGel = morph('o', maskedGel, 'mascara gel abierta', small_kernel, 0)
 
-# maskedGel = threshold(maskedGel, 70, 255, 'mascara gel', cv.THRESH_BINARY, 1)
-maskedGel = cv.bitwise_and(maskedGel, maskedGel, mask=cv.bitwise_not(maskedGray))
+# # maskedGel = threshold(maskedGel, 70, 255, 'mascara gel', cv.THRESH_BINARY, 1)
+# maskedGel = cv.bitwise_and(maskedGel, maskedGel, mask=cv.bitwise_not(maskedGray))
 
-# cv.imshow('mascara gel', maskedGel)
-contour(maskedGel, img2, (255, 255, 255), 'contorno mascara gel') # Color piel dada
+# img2 = createImg()
 
+# # cv.imshow('mascara gel', maskedGel)
+# contour(maskedGel, img2, (255, 255, 255), 'contorno mascara gel') # Color piel dada
 
-plt.show()
+# plt.show()
 
-cv.waitKey()
+# cv.waitKey()
