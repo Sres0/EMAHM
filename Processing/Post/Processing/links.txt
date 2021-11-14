@@ -3,3 +3,15 @@ https://stackoverflow.com/questions/65788972/find-hand-contours-only-python-open
 https://stackoverflow.com/questions/65788972/find-hand-contours-only-python-opencv
 https://learnopencv.com/color-spaces-in-opencv-cpp-python/
 https://scikit-image.org/docs/dev/api/skimage.metrics.html?highlight=ssim#skimage.metrics.structural_similarity
+https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
+https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
+https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html
+https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html
+https://docs.opencv.org/4.x/d5/d0f/tutorial_py_gradients.html
+https://docs.opencv.org/4.x/d1/db7/tutorial_py_histogram_begins.html
+https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html
+https://docs.opencv.org/4.x/dc/df6/tutorial_py_histogram_backprojection.html
+https://docs.opencv.org/4.x/dd/d0d/tutorial_py_2d_histogram.html
+https://docs.opencv.org/4.x/d4/dc6/tutorial_py_template_matching.html
+https://docs.opencv.org/4.x/d3/db4/tutorial_py_watershed.html
+https://docs.opencv.org/4.x/d8/d83/tutorial_py_grabcut.html
