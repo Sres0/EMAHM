@@ -8,6 +8,7 @@ https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
 https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html
 https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html
 https://docs.opencv.org/4.x/d5/d0f/tutorial_py_gradients.html
+https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html
 https://docs.opencv.org/4.x/d1/db7/tutorial_py_histogram_begins.html
 https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html
 https://docs.opencv.org/4.x/dc/df6/tutorial_py_histogram_backprojection.html
@@ -15,3 +16,5 @@ https://docs.opencv.org/4.x/dd/d0d/tutorial_py_2d_histogram.html
 https://docs.opencv.org/4.x/d4/dc6/tutorial_py_template_matching.html
 https://docs.opencv.org/4.x/d3/db4/tutorial_py_watershed.html
 https://docs.opencv.org/4.x/d8/d83/tutorial_py_grabcut.html
+https://www.pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/
+https://medium.com/jun-devpblog/cv-3-gradient-and-laplacian-filter-difference-of-gaussians-dog-7c22e4a9d6cc
