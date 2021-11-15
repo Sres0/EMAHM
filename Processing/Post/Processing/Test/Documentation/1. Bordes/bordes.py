@@ -27,7 +27,6 @@ sobely = cv.Sobel(gray, cv.CV_64F, 0, 1)
 cv.imshow('sobel Y', sobely)
 combined = cv.bitwise_or(sobelx, sobely)
 cv.imshow('sobel combinados', combined)
-cv.imwrite(f'Processing/Post/Processing/Test/Documentation/1. Bordes/aooooooo_{i}.png', combined)
 
 ### Canny ###
 canny = cv.Canny(gray, 40, 90)
