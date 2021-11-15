@@ -15,7 +15,7 @@ def createImg(path, i):
     h = int(720/3)
     resized = cv.resize(img, (w,h))
     cv.imshow(f'Original {i}', resized)
-    cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/original_{i}.png', resized)
+    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/original_{i}.png', resized)
     return resized
 
 path1 = path(i)
@@ -26,18 +26,18 @@ img1 = createImg(path1, i)
 img2 = createImg(path2, j)
 img3 = createImg(path3, k)
 
-### GRAYSCALE ###
+### Grayscale ###
 
 def gray(i, img):
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     cv.imshow(f'Escala de gris {i}', gray)
-    cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/gris_{i}.png', gray)
+    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/gris_{i}.png', gray)
     return gray
 
-def histogram(title, img):
+def histogram(i, img):
     hist = cv.calcHist([img], [0], None, [256], [0,256])
     plt.figure()
-    plt.title(title)
+    plt.title(f'Histograma imagen {i}')
     plt.xlabel('Intensidad de pixel (0 - 255)')
     plt.ylabel('Número de pixeles')
     plt.grid()
@@ -48,9 +48,21 @@ gray1 = gray(i, img1)
 gray2 = gray(j, img2)
 gray3 = gray(k, img3)
 
-hist1 = histogram(f'Histograma imagen {i}', gray1)
-hist2 = histogram(f'Histograma imagen {j}', gray2)
-hist3 = histogram(f'Histograma imagen {k}', gray3)
+hist1 = histogram(i, gray1)
+hist2 = histogram(j, gray2)
+hist3 = histogram(k, gray3)
+
+### Mask ###
+
+def threshold(i, mval, img):
+    _, thresh = cv.threshold(img, mval, 255, cv.THRESH_BINARY)
+    cv.imshow(f'Mascara {i}', thresh)
+    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/threshold_{i}_{mval}.png', thresh)
+    return threshold
+
+thresh1 = threshold(i, 100, gray1)
+thresh2 = threshold(j, 105, gray2)
+thresh3 = threshold(k, 85, gray3)
 
 plt.show()
 
