@@ -6,37 +6,34 @@ i = 76 # con gel
 j = 64
 
 def path(i):
-    return f'Processing/Post/Bank/Imgs/hand_test_{i}.png'
+    return f'Processing/Bank/Imgs/hand_test_{i}.png'
 
-def createImg(path, i, hide=False, write=False):
+def createImg(path, i, hide=False):
     img = cv.imread(path)
     w = int(1280/3)
     h = int(720/3)
     resized = cv.resize(img, (w,h))
     if not hide: cv.imshow(f'Original {i}', resized)
-    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/6. Morfologia/original_{i}.png', resized)
     return resized
 
-img = createImg(path(i), i, write=True)
-img2 = createImg(path(j), j, write=True)
+img = createImg(path(i), i)
+img2 = createImg(path(j), j)
 hsvEdited = createImg(path(i), i, 1)
 hsvEditedBlur = cv.blur(hsvEdited, (2,2))
 
 ### Máscara y morf ###
 
-def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY, write=False):
+def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY):
     _, thresh = cv.threshold(img, mval, 255, method)
     cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
-    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/6. Morfologia/thresh_{channel_name}_{i}.png', thresh)
     return thresh
 
-def contour(mask, img, color, i, channel_name, write=False):
+def contour(mask, img, color, i, channel_name):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(img, contours, -1, color, 1)
     cv.imshow(f'contorno {channel_name} {i}', img)
-    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/6. Morfologia/contour_{channel_name}_{i}.png', img)
 
-def morph(opt, src, img, title, kernel, hide=False, iterations=1, write=False):
+def morph(opt, src, img, title, kernel, hide=False, iterations=1):
     mask = 0
     if opt == 'e':
         mask = cv.erode(src, kernel, iterations=iterations)
@@ -48,7 +45,6 @@ def morph(opt, src, img, title, kernel, hide=False, iterations=1, write=False):
         mask = cv.morphologyEx(src, cv.MORPH_CLOSE, kernel)
     if not hide:
         cv.imshow(title, mask)
-    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/6. Morfologia/contour_{title}.png', mask)
     return mask
 
 small_kernel = np.ones((2,2),np.uint8)
@@ -75,8 +71,7 @@ hsvEditedBlur = cv.convertScaleAbs(hsvEditedBlur, alpha=alpha, beta=beta)
 
 def show_channels(imgs, titles, j):
     for i in range(len(imgs)):
-        # cv.imshow(titles[i], imgs[i])
-        pass
+        cv.imshow(titles[i], imgs[i])
 
 def split_channels(img, cvt, titles, i):
     img = cv.cvtColor(img, cvt)
@@ -102,8 +97,8 @@ def histogram(i, img, channel_name):
     plt.plot(hist)
     plt.xlim([0,256])
 
-# for j in range(len(channel_imgs)):
-#     histogram(i, channel_imgs[j], channel_names[j])
+for j in range(len(channel_imgs)):
+    histogram(i, channel_imgs[j], channel_names[j])
 
 ### Contornos ###
 
@@ -119,5 +114,5 @@ img_blur = createImg(path(i), i)
 contour(hsv_edited_mask, img, (255, 255, 0), i, 'HSV_editada', write=True)
 contour(hsv_edited_blur_mask, img_blur, (255, 255, 0), i, 'HSV_editada_blur', write=True)
 
-# plt.show()
+plt.show()
 cv.waitKey()
