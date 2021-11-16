@@ -1,0 +1,16 @@
+Misc:
+    ☐ Adaptative gaussian @low
+    ☐ GrabCut @low 
+    ☐ Template matching @low
+    ☐ Reduce img size @low
+    ☐ Reorganize images @low 
+
+Histograms:
+    ☐ 2D histograms @high 
+    ☐ 3D histograms @high 
+    ☐ Equalization @high 
+    ☐ Backprojection @low 
+
+Hardware:
+    ☐ Wrist line @low 
+    ☐ Rewire circuit @low
