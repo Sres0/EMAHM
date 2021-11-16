@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 
 i = 76
-path = f'Processing/Post/Bank/Imgs/hand_test_{i}.png'
+path = f'Processing/Bank/Imgs/hand_test_{i}.png'
 img_description = 'grayscale'
 
 img = cv.imread(path)
