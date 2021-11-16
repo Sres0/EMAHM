@@ -8,37 +8,37 @@ j = i - 2 # sin gel
 def path(i):
     return f'Processing/Post/Bank/Imgs/hand_test_{i}.png'
 
-def createImg(path, i, show=False):
+def createImg(path, i, hide=False, write=False):
     img = cv.imread(path)
     w = int(1280/3)
     h = int(720/3)
     resized = cv.resize(img, (w,h))
-    if not show: cv.imshow(f'Original {i}', resized)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/original_{i}.png', resized)
+    if not hide: cv.imshow(f'Original {i}', resized)
+    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/4. Espacios/original_{i}.png', resized)
     return resized
 
 imgGel = createImg(path(i), i)
 imgNoGel = createImg(path(j), j)
 hsv = createImg(path(i), i, 1)
 lab = createImg(path(i), i, 1)
+bgr = createImg(path(i), i, 1)
 
 def show_channels(imgs, titles, j):
     for i in range(len(imgs)):
-        cv.imshow(titles[i], imgs[i])
-        # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/3. Canales/{titles[i]}_{j}.png', imgs[i])
+        # cv.imshow(titles[i], imgs[i])
+        pass
 
 ### Máscara ###
 
-def threshold(i, mval, img, channel):
-    _, thresh = cv.threshold(img, mval, 255, cv.THRESH_BINARY)
-    cv.imshow(f'Mascara {channel} {i} | {mval}', thresh)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/3. Canales/threshold_{channel}_{i}_{mval}.png', thresh)
+def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY):
+    _, thresh = cv.threshold(img, mval, 255, method)
+    # cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
     return thresh
 
 gray = cv.cvtColor(imgGel, cv.COLOR_BGR2GRAY)
 hand_mask = threshold(i, 105, gray, 'gris')
 
-### HSV & LAB ###
+### BGR, HSV & LAB ###
 
 def split_channels(img, cvt, titles, i):
     img = cv.cvtColor(img, cvt)
@@ -47,19 +47,13 @@ def split_channels(img, cvt, titles, i):
     show_channels([x,y,z], titles, i)
     return img, x, y, z
 
-channel_names = ['hue', 'saturation', 'value', 'lightness', 'a', 'b']
+channel_names = ['hue', 'saturation', 'value', 'lightness', 'a', 'b', 'azul', 'verde', 'rojo']
 hsv, h, s, v = split_channels(hsv, cv.COLOR_BGR2HSV, [channel_names[i] for i in range(0, 3)], i)
 lab, l, a, b = split_channels(lab, cv.COLOR_BGR2LAB, [channel_names[i] for i in range(3, 6)], i)
-channel_imgs = [h, s, v, l, a, b]
+bgr, bl, g, r = split_channels(bgr, cv.COLOR_BGR2LAB, [channel_names[i] for i in range(6, 9)], i)
+channel_imgs = [h, s, v, l, a, b, bl, g, r]
 
 ### Histograma ###
-
-def channel_str(channel):
-    if channel == 'h' or channel == 'b': channel_str = 'azul'
-    elif channel == (0, 255, 0) or channel == 'g': channel_str = 'verde'
-    elif channel == (0, 0, 255) or channel == 'r': channel_str = 'rojo'
-    else: channel_str = ''
-    return channel_str
 
 def histogram(i, img, channel_name):
     hist = cv.calcHist([img], [0], None, [256], [0,256])
@@ -71,26 +65,30 @@ def histogram(i, img, channel_name):
     plt.plot(hist)
     plt.xlim([0,256])
 
-for j in range(len(channel_imgs)):
-    histogram(i, channel_imgs[j], channel_names[j])
+# for j in range(len(channel_imgs)):
+#     histogram(i, channel_imgs[j], channel_names[j])
 
-def contour(mask, img, color, i, channel):
+def contour(mask, img, color, i, channel_name, write=False):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(img, contours, -1, color, 1)
-    cv.imshow(f'contorno {channel} {i}', img)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/4. Espacios/contour_{channel}_{i}.png', img)
+    cv.imshow(f'contorno {channel_name} {i}', img)
+    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/4. Espacios/contour_{channel_name}_{i}.png', img)
 
-# bHist = histogram(i, b, 'b', channel_str)
-# gHist = histogram(i, g, 'g', channel_str)
-# rHist = histogram(i, r, 'r', channel_str)
+lowerHSV = np.array([100, 5, 150], dtype="uint8") # 100, 5, 150
+upperHSV = np.array([150, 100, 255], dtype="uint8") # 150, 100, 255
+lowerLAB = np.array([160, 125, 90], dtype="uint8") # 100, 125, 60
+upperLAB = np.array([250, 165, 130], dtype="uint8") # 250, 180, 130
 
-# bThresh = threshold(i, 200, b, channel_str, 'b')
-# gThresh = threshold(i, 60, g, channel_str, 'g')
-# rThresh = threshold(i, 125, r, channel_str, 'r')
+hsv_mask = cv.inRange(hsv, lowerHSV, upperHSV)
+lab_mask = cv.inRange(lab, lowerLAB, upperLAB)
+green_mask = threshold(i, 160, g, 'green', cv.THRESH_BINARY_INV)
+green_mask = cv.bitwise_and(green_mask, green_mask, mask=hand_mask)
 
-# contour(bThresh, img1, (255, 0, 0), i, channel_str)
-# contour(gThresh, img2, (0, 255, 0), i, channel_str)
-# contour(rThresh, img3, (0, 0, 255), i, channel_str)
+imgGel2 = createImg(path(i), i)
+imgGel3 = createImg(path(i), i)
+contour(hsv_mask, imgGel, (0, 255, 255), i, 'hsv')
+contour(lab_mask, imgGel2, (255, 0, 255), i, 'lab')
+contour(green_mask, imgGel3, (0, 255, 0), i, 'verde')
 
 plt.show()
 
