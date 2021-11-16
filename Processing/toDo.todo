@@ -1,16 +1,35 @@
-Misc:
+Tasks:
+    ☐ Segment hand & gel with usual methods
+        ☐ Compare no gel histogram to gel histogram
+        ☐ Find combinations & orders
+    ☐ Histogram equalization
+    ☐ 2D & 3D histograms
+        ☐ Signal processing to automate
+    ☐ Read about methods
+        ☐ Backprojection
+        ☐ Adaptative gaussian
+        ☐ GrabCut
+        ☐ Template matching
+    ☐ Research img comparison methods
+
+Methods:
     ☐ Adaptative gaussian @low
     ☐ GrabCut @low 
     ☐ Template matching @low
-    ☐ Reduce img size @low
-    ☐ Reorganize images @low 
 
 Histograms:
+    ☐ Equalization @critical 
     ☐ 2D histograms @high 
     ☐ 3D histograms @high 
-    ☐ Equalization @high 
     ☐ Backprojection @low 
 
 Hardware:
     ☐ Wrist line @low 
     ☐ Rewire circuit @low
+
+Misc:
+    ☐ Reduce img size @low
+    ☐ Reorganize images @low 
+
+Ideas:
+    * Create contour of 1st image in 3rd & such
