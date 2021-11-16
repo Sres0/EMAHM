@@ -5,7 +5,7 @@ import numpy as np
 i = 76
 
 def path(i):
-    return f'Processing/Post/Bank/Imgs/hand_test_{i}.png'
+    return f'Processing/Bank/Imgs/hand_test_{i}.png'
 
 def createImg(path, i):
     img = cv.imread(path)
@@ -13,7 +13,6 @@ def createImg(path, i):
     h = int(720/3)
     resized = cv.resize(img, (w,h))
     cv.imshow(f'Original {i}', resized)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/original_{i}.png', resized)
     return resized
 
 path1 = path(i)
@@ -25,7 +24,6 @@ img3 = createImg(path1, i)
 def show_channels(imgs, titles, j):
     for i in range(len(imgs)):
         cv.imshow(titles[i], imgs[i])
-        cv.imwrite(f'Processing/Post/Processing/Test/Documentation/3. Canales/{titles[i]}_{j}.png', imgs[i])
 
 b,g,r = cv.split(img1)
 show_channels([b,g,r], ['azul', 'verde', 'rojo'], i)
@@ -46,7 +44,6 @@ def threshold(i, mval, img, channel_str, channel):
     _, thresh = cv.threshold(img, mval, 255, cv.THRESH_BINARY)
     channel_str = channel_str(channel)
     cv.imshow(f'Mascara {channel_str} {i} | {mval}', thresh)
-    cv.imwrite(f'Processing/Post/Processing/Test/Documentation/3. Canales/threshold_{channel_str}_{i}_{mval}.png', thresh)
     return thresh
 
 def channel_str(channel):
@@ -61,7 +58,6 @@ def contour(mask, img, color, i, channel_str):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(img, contours, -1, color, 1)
     cv.imshow(f'contorno {channel_str} {i}', img)
-    cv.imwrite(f'Processing/Post/Processing/Test/Documentation/3. Canales/contour_{channel_str}_{i}.png', img)
 
 bHist = histogram(i, b, 'b', channel_str)
 gHist = histogram(i, g, 'g', channel_str)
