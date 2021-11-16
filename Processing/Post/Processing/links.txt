@@ -18,3 +18,4 @@ https://docs.opencv.org/4.x/d3/db4/tutorial_py_watershed.html
 https://docs.opencv.org/4.x/d8/d83/tutorial_py_grabcut.html
 https://www.pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/
 https://medium.com/jun-devpblog/cv-3-gradient-and-laplacian-filter-difference-of-gaussians-dog-7c22e4a9d6cc
+https://docs.opencv.org/3.4/d3/dc1/tutorial_basic_linear_transform.html
