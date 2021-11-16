@@ -5,15 +5,14 @@ import numpy as np
 i = 76 # con gel
 
 def path(i):
-    return f'Processing/Post/Bank/Imgs/hand_test_{i}.png'
+    return f'Processing/Bank/Imgs/hand_test_{i}.png'
 
-def createImg(path, i, hide=False, write=False):
+def createImg(path, i, hide=False):
     img = cv.imread(path)
     w = int(1280/3)
     h = int(720/3)
     resized = cv.resize(img, (w,h))
     if not hide: cv.imshow(f'Original {i}', resized)
-    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/5. Iluminacion/original_{i}.png', resized)
     return resized
 
 img = createImg(path(i), i)
@@ -24,7 +23,7 @@ hsvEdited = createImg(path(i), i, 1)
 
 def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY):
     _, thresh = cv.threshold(img, mval, 255, method)
-    # cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
+    cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
     return thresh
 
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -76,11 +75,10 @@ for j in range(len(channel_imgs)):
 
 ### Contornos ###
 
-def contour(mask, img, color, i, channel_name, write=False):
+def contour(mask, img, color, i, channel_name):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cv.drawContours(img, contours, -1, color, 1)
     cv.imshow(f'contorno {channel_name} {i}', img)
-    if write: cv.imwrite(f'Processing/Post/Processing/Test/Documentation/5. Iluminacion/contour_{channel_name}_{i}.png', img)
 
 lower_hsv = np.array([100, 5, 150], dtype="uint8") # 100, 5, 150
 upper_hsv = np.array([150, 100, 255], dtype="uint8") # 150, 100, 255
