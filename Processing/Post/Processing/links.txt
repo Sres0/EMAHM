@@ -1,6 +1,5 @@
 https://stackoverflow.com/questions/63272798/python-split-an-image-based-on-white-space
 https://stackoverflow.com/questions/65788972/find-hand-contours-only-python-opencv
-https://stackoverflow.com/questions/65788972/find-hand-contours-only-python-opencv
 https://learnopencv.com/color-spaces-in-opencv-cpp-python/
 https://scikit-image.org/docs/dev/api/skimage.metrics.html?highlight=ssim#skimage.metrics.structural_similarity
 https://docs.opencv.org/4.x/df/d9d/tutorial_py_colorspaces.html
@@ -19,3 +18,4 @@ https://docs.opencv.org/4.x/d8/d83/tutorial_py_grabcut.html
 https://www.pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/
 https://medium.com/jun-devpblog/cv-3-gradient-and-laplacian-filter-difference-of-gaussians-dog-7c22e4a9d6cc
 https://docs.opencv.org/3.4/d3/dc1/tutorial_basic_linear_transform.html
+https://www.pyimagesearch.com/2021/01/23/splitting-and-merging-channels-with-opencv/
