@@ -7,7 +7,7 @@ j = 76
 k = j + 1
 
 def path(i):
-    return f'Processing/Post/Bank/Imgs/hand_test_{i}.png'
+    return f'Processing/Bank/Imgs/hand_test_{i}.png'
 
 def createImg(path, i):
     img = cv.imread(path)
@@ -15,7 +15,6 @@ def createImg(path, i):
     h = int(720/3)
     resized = cv.resize(img, (w,h))
     cv.imshow(f'Original {i}', resized)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/original_{i}.png', resized)
     return resized
 
 path1 = path(i)
@@ -31,7 +30,6 @@ img3 = createImg(path3, k)
 def gray(i, img):
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     cv.imshow(f'Escala de gris {i}', gray)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/gris_{i}.png', gray)
     return gray
 
 def histogram(i, img):
@@ -57,7 +55,6 @@ hist3 = histogram(k, gray3)
 def threshold(i, mval, img):
     _, thresh = cv.threshold(img, mval, 255, cv.THRESH_BINARY)
     cv.imshow(f'Mascara {i}', thresh)
-    # cv.imwrite(f'Processing/Post/Processing/Test/Documentation/2. Diagramas/threshold_{i}_{mval}.png', thresh)
     return threshold
 
 thresh1 = threshold(i, 100, gray1)
