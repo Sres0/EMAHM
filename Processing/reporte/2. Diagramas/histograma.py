@@ -55,7 +55,7 @@ hist3 = histogram(k, gray3)
 def threshold(i, mval, img):
     _, thresh = cv.threshold(img, mval, 255, cv.THRESH_BINARY)
     cv.imshow(f'Mascara {i}', thresh)
-    return threshold
+    return thresh
 
 thresh1 = threshold(i, 100, gray1)
 thresh2 = threshold(j, 105, gray2)
