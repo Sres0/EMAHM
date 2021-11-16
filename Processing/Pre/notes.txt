@@ -1,2 +1,0 @@
-10 -> potenciómetros + side lights
-11 -> potenciómetros + upper lights
