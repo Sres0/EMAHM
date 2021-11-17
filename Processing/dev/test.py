@@ -16,8 +16,8 @@ def createImg(i, hide=False):
     if not hide: cv.imshow(f'Original {i}', resized)
     return resized
 
-gel = createImg(i)
-# noGel = createImg(j)
+imgGel = createImg(i)
+# imgNoGel = createImg(j)
 
 ### Máscara mano ###
 
@@ -36,93 +36,18 @@ def histogram(i, img, channel_name):
     plt.plot(hist)
     plt.xlim([0,256])
 
-gelGray = cv.cvtColor(gel, cv.COLOR_BGR2GRAY)
-b, g, r = cv.split(gel)
-cv.imshow('green1', g)
-gelGrayNotGreen = cv.bitwise_not(gelGray, g, mask=None)
-gelGreenNotGray = cv.bitwise_not(g, gelGray, mask=None)
-channel_names = ['Gray', 'Green', 'Gray not green', 'Green not gray']
-channel_imgs = [gelGray, g, gelGrayNotGreen, gelGreenNotGray]
-# cv.imshow(channel_names[1], channel_imgs[1])
-cv.imshow('green', g)
+gelGray = cv.cvtColor(imgGel, cv.COLOR_BGR2GRAY)
+b, g, r = cv.split(imgGel)
+h, s, v = cv.split(cv.cvtColor(imgGel, cv.COLOR_BGR2HSV))
+channel_names = ['Gray', 'Green']
+channel_imgs = [gelGray, g]
 
-# for a in range(len(channel_imgs)):
-#     cv.imshow(channel_names[a], channel_imgs[a])
-    # histogram(i, channel_imgs[j], channel_names[j])
+for j in range(len(channel_imgs)):
+    cv.imshow(channel_names[j], channel_imgs[j])
+    histogram(i, channel_imgs[j], channel_names[j])
 
-# def contour(mask, img, color, i, channel_name):
-#     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-#     cv.drawContours(img, contours, -1, color, 1)
-#     cv.imshow(f'contorno {channel_name} {i}', img)
+gray_hand_mask_gel = threshold(i, 112, gelGray, f'gris original gel')
+g_hand_mask_gel = threshold(i, 75, g, f'verde original gel')
 
-# def morph(opt, src, img, title, kernel, hide=False, iterations=1):
-#     mask = 0
-#     if opt == 'e':
-#         mask = cv.erode(src, kernel, iterations=iterations)
-#     elif opt == 'd':
-#         mask = cv.dilate(src, kernel, iterations=iterations)
-#     elif opt == 'o':
-#         mask = cv.morphologyEx(src, cv.MORPH_OPEN, kernel)
-#     elif opt == 'c':
-#         mask = cv.morphologyEx(src, cv.MORPH_CLOSE, kernel)
-#     if not hide:
-#         cv.imshow(title, mask)
-#     return mask
-
-# small_kernel = np.ones((2,2),np.uint8)
-# smedium_kernel = np.ones((3,3),np.uint8)
-# medium_kernel = np.ones((5,5),np.uint8)
-
-# gray1 = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-# gray1_blur = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-# gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
-# hand_mask1 = threshold(i, 105, gray1, f'mascara_original', write=True)
-# hand_mask1 = morph('c', hand_mask1, img, f'mascara_morf_mano_{i}', smedium_kernel, write=True)
-# hand_mask2 = threshold(j, 105, gray2, f'mascara_original', write=True)
-# hand_mask2 = morph('c', hand_mask2, img2, f'mascara_morf_mano_{j}', smedium_kernel)
-# hand_mask2 = morph('o', hand_mask2, img2, f'mascara_morf_mano_{j}', smedium_kernel, write=True)
-
-# # ### Brillo y contraste ###
-
-# alpha = 1 # Contrast 1
-# beta = -100 # Brightness -100
-# hsvEdited = cv.convertScaleAbs(hsvEdited, alpha=alpha, beta=beta)
-# hsvEditedBlur = cv.convertScaleAbs(hsvEditedBlur, alpha=alpha, beta=beta)
-
-# # ### Canales ###
-
-# def show_channels(imgs, titles, j):
-#     for i in range(len(imgs)):
-#         cv.imshow(titles[i], imgs[i])
-
-# def split_channels(img, cvt, titles, i):
-#     img = cv.cvtColor(img, cvt)
-#     img = cv.bitwise_and(img, img, mask=hand_mask1)
-#     x, y, z = cv.split(img)
-#     show_channels([x,y,z], titles, i)
-#     return img, x, y, z
-
-# channel_names = ['hue_editada', 'saturation_editada', 'value_editada', 'hue_editada_blur', 'saturation_editada_blur', 'value_editada_blur']
-# hsvEdited, hE, sE, vE = split_channels(hsvEdited, cv.COLOR_BGR2HSV, [channel_names[i] for i in range(0, 3)], i)
-# hsvEditedBlur, hEB, sEB, vEB = split_channels(hsvEditedBlur, cv.COLOR_BGR2HSV, [channel_names[i] for i in range(3, 6)], i)
-# channel_imgs = [hE, sE, vE, hEB, sEB, vEB]
-
-# # ### Histograma ###
-
-
-# ### Contornos ###
-
-# lower_hsv_edited = np.array([100, 5, 110], dtype="uint8") # 100, 5, 110
-# upper_hsv_edited = np.array([150, 180, 255], dtype="uint8") # 150, 180, 255
-# lower_hsv_edited_blur = np.array([100, 5, 110], dtype="uint8") # 100, 5, 110
-# upper_hsv_edited_blur = np.array([150, 180, 255], dtype="uint8") # 150, 180, 255
-
-# hsv_edited_mask = cv.inRange(hsvEdited, lower_hsv_edited, upper_hsv_edited)
-# hsv_edited_blur_mask = cv.inRange(hsvEditedBlur, lower_hsv_edited_blur, upper_hsv_edited_blur)
-
-# img_blur = createImg(path(i), i)
-# contour(hsv_edited_mask, img, (255, 255, 0), i, 'HSV_editada', write=True)
-# contour(hsv_edited_blur_mask, img_blur, (255, 255, 0), i, 'HSV_editada_blur', write=True)
-
-# plt.show()
+plt.show()
 cv.waitKey()
