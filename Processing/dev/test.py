@@ -36,18 +36,51 @@ def histogram(i, img, channel_name):
     plt.plot(hist)
     plt.xlim([0,256])
 
+def cvt_n_split(img, method=cv.COLOR_BGR2HSV):
+    img = cv.cvtColor(img, method)
+    x, y, z = cv.split(img)
+    return img, [x, y, z]
+
 gelGray = cv.cvtColor(imgGel, cv.COLOR_BGR2GRAY)
-b, g, r = cv.split(imgGel)
-h, s, v = cv.split(cv.cvtColor(imgGel, cv.COLOR_BGR2HSV))
-channel_names = ['Gray', 'Green']
-channel_imgs = [gelGray, g]
+lBgr = cv.split(imgGel)
+hsv, lHsv = cvt_n_split(imgGel)
+lab, lLab = cvt_n_split(imgGel, cv.COLOR_BGR2LAB)
 
-for j in range(len(channel_imgs)):
-    cv.imshow(channel_names[j], channel_imgs[j])
-    histogram(i, channel_imgs[j], channel_names[j])
+### 1D Histogram ###
+def one_d_histogram(imgChannels):
+    lColors = ('b', 'g', 'r')
+    plt.figure()
+    plt.title('Histograma 1D')
+    plt.xlabel('Bins')
+    plt.ylabel('Pixeles')
+    plt.grid()
 
-gray_hand_mask_gel = threshold(i, 112, gelGray, f'gris original gel')
-g_hand_mask_gel = threshold(i, 75, g, f'verde original gel')
+    # for chan in imgChannels:
+    hist = cv.calcHist([imgChannels], [0], None, [255], [0, 256])
+    plt.plot(hist)
+    # plt.plot(hist, color=col)
+    plt.xlim([0, 256])
+
+one_d_histogram(lHsv[0])
+
+### 2D Histogram ###
+# hist = cv.calcHist([h, s], [0, 1], None, [255, 255], [0, 256, 0, 256])
+# fig = plt.figure()
+# ax = fig.add_subplot(131)
+# p = ax.imshow(hist, interpolation='nearest')
+# ax.set_title('dsfd')
+# plt.colorbar(p)
+# plt.show()
+
+### Equalize ###
+equ = cv.equalizeHist(lHsv[1])
+res = np.hstack((lHsv[1], equ))
+cv.imshow('image', res)
+one_d_histogram(equ)
+
+h_hand_mask_gel = threshold(i, 135, lHsv[0], f'hue gel')
+eq_h_hand_mask_gel = threshold(i, 80, equ, f'hue ecualizado gel')
+# g_hand_mask_gel = threshold(i, 75, g, f'verde original gel')
 
 plt.show()
 cv.waitKey()
