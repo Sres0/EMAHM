@@ -2,7 +2,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
 
-i = 80 # con gel
+i = 63 # con gel
 j = i - 2
 
 def path(i):
@@ -16,7 +16,7 @@ def createImg(i, hide=False):
     if not hide: cv.imshow(f'Original {i}', resized)
     return resized
 
-imgGel = createImg(i, 1)
+imgGel = createImg(i)
 
 small_blur = (2,2)
 medium_blur = (5,5)
@@ -43,14 +43,26 @@ def one_d_histogram(img):
     
     plt.xlim([0, 256])
     indices = list(range(0, 255))
-    hist = [(x,y[0]) for x,y in zip(indices,hist)]
-    print(hist)
-    # for x,y in zip(indices,hist):
-    #     print(x,y[0])
+    hist = [y[0] for y in hist]
+    # hist = [(x,y[0]) for x,y in zip(indices,hist)]
     return hist
 
 hGelGray = one_d_histogram(gelGray)
-print(hGelGray[254][1])
+
+from scipy.signal import savgol_filter
+# print(hGelGray[:])
+plt.figure()
+
+x = np.array(range(0,256))
+y = savgol_filter(hGelGray[:], 35, 3)
+
+plt.grid()
+plt.plot(x,hGelGray[:])
+plt.plot(x,y, color='red')
+plt.xlim([0, 256])
+plt.show()
+
+# print(hGelGray[254][1])
 
 # ### 2D Histogram ###
 # # hist = cv.calcHist([h, s], [0, 1], None, [255, 255], [0, 256, 0, 256])
@@ -71,5 +83,5 @@ print(hGelGray[254][1])
 # eq_h_hand_mask_gel = threshold(i, 80, equ, f'hue ecualizado gel')
 # g_hand_mask_gel = threshold(i, 75, g, f'verde original gel')
 
-plt.show()
+# plt.show()
 cv.waitKey()
