@@ -2,7 +2,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
 
-i = 63 # con gel
+i = 55 # con gel
 j = i - 2
 
 def path(i):
@@ -16,7 +16,7 @@ def createImg(i, hide=False):
     if not hide: cv.imshow(f'Original {i}', resized)
     return resized
 
-imgGel = createImg(i)
+imgGel = createImg(i, 1)
 
 small_blur = (2,2)
 medium_blur = (5,5)
@@ -25,40 +25,55 @@ gelGray = cv.cvtColor(imgGel, cv.COLOR_BGR2GRAY)
 lBgr = cv.split(imgGel)
 
 ### 1D Histogram ###
-def one_d_histogram(img):
-    lColors = ('b', 'g', 'r')
-    plt.figure()
-    plt.title('Histograma 1D')
-    plt.xlabel('Bins')
-    plt.ylabel('Pixeles')
-    plt.grid()
+def one_d_histogram(img, hide=False):
+    if not hide:
+        plt.figure()
+        plt.title('Histograma 1D')
+        plt.xlabel('Bins')
+        plt.ylabel('Pixeles')
+        plt.grid()
+        plt.xlim([0, 256])
 
     if type(img) == list:
-        for (chan, col) in zip(img, lColors):
+        for chan in img:
             hist = cv.calcHist([chan], [0], None, [256], [0, 256])
-            plt.plot(hist, color=col)
     else:
         hist = cv.calcHist([img], [0], None, [256], [0, 256])
-        plt.plot(hist)
-    
-    plt.xlim([0, 256])
+    if not hide: plt.plot(hist)
     indices = list(range(0, 255))
     hist = [y[0] for y in hist]
     # hist = [(x,y[0]) for x,y in zip(indices,hist)]
     return hist
 
-hGelGray = one_d_histogram(gelGray)
+hGelGray = one_d_histogram(gelGray, 1)
 
-from scipy.signal import savgol_filter
-# print(hGelGray[:])
-plt.figure()
+import scipy.signal as sig
 
+# outliers
+y = np.where(hGelGray > (np.mean(hGelGray) + 10*np.std(hGelGray)), np.mean(hGelGray), hGelGray)
+y = np.where(hGelGray < (np.mean(hGelGray) - 10*np.std(hGelGray)), np.mean(hGelGray), hGelGray)
+
+# butter
+fs = 60
+wn = 5/(fs/2)
+b, a = sig.butter(3, wn, btype='lowpass')
+y = sig.filtfilt(b, a, y)
 x = np.array(range(0,256))
-y = savgol_filter(hGelGray[:], 35, 3)
+
+# peaks
+min_peaks, _ = sig.find_peaks(-y, height=(-500, -1))
+thresh = next(filter(lambda index: index > 50, min_peaks), None)
+print(thresh)
+# from scipy.signal import savgol_filter
+# # print(hGelGray[:])
+plt.figure()
+# y = savgol_filter(hGelGray[:], 35, 3)
 
 plt.grid()
-plt.plot(x,hGelGray[:])
+plt.plot(x,hGelGray)
 plt.plot(x,y, color='red')
+plt.plot(thresh,y[thresh], "x")
+# plt.plot(-y)
 plt.xlim([0, 256])
 plt.show()
 
