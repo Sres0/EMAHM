@@ -24,16 +24,18 @@ eqImgNoGel = createImg(j)
 # imgNoGel = createImg(j, hide=False)
 # cv.imshow('Segmented gel & no gel', np.hstack([imgGel, imgNoGel]))
 
-### Mask ###
+### MASK ###
 
 medium_blur = (3,3)
+big_blur = (5,5)
 
-blurredImgGel = cv.blur(imgGel, medium_blur)
-blurredImgNoGel = cv.blur(imgNoGel, medium_blur)
+blurredImgGel = cv.blur(imgGel, big_blur)
+blurredImgNoGel = cv.blur(imgNoGel, big_blur)
 
-grayBlurredImgGel = cv.blur(cv.cvtColor(blurredImgGel, cv.COLOR_BGR2GRAY), medium_blur)
-grayBlurredImgNoGel = cv.blur(cv.cvtColor(blurredImgNoGel, cv.COLOR_BGR2GRAY), medium_blur)
-grayEqBlurredImgNoGel = cv.equalizeHist(grayBlurredImgNoGel)
+grayBlurredImgGel = cv.cvtColor(blurredImgGel, cv.COLOR_BGR2GRAY)
+grayBlurredImgNoGel = cv.cvtColor(blurredImgNoGel, cv.COLOR_BGR2GRAY)
+clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+grayEqBlurredImgNoGel = clahe.apply(grayBlurredImgNoGel)
 
 def one_d_histogram(img, title, hide=True):
 
@@ -83,16 +85,16 @@ def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
 
 hGrayBlurredImgGel = one_d_histogram(grayBlurredImgGel, 'Blurred gray gel', hide=True)
 hGrayBlurredImgNoGel = one_d_histogram(grayBlurredImgNoGel, 'Blurred gray no gel', hide=True)
-hGrayEqBlurredImgNoGel = one_d_histogram(grayEqBlurredImgNoGel, 'Equalized blurred gray no gel', hide=False)
+hGrayEqBlurredImgNoGel = one_d_histogram(grayEqBlurredImgNoGel, 'Equalized blurred gray no gel', hide=True)
 
 def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY, hide=True):
     _, thresh = cv.threshold(img, mval, 255, method)
     if not hide: cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
     return thresh
 
-mGrayBlurredImgGel = threshold(i, find_hand_thresh(hGrayBlurredImgGel, title='gel thresh', hide=True), grayBlurredImgGel, 'gray blurred gel')
-mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=True), grayBlurredImgNoGel, 'gray blurred no gel')
-mGrayEqBlurredImgNoGel = threshold(i, 185, grayEqBlurredImgNoGel, 'gray equalized blurred no gel')
+mGrayBlurredImgGel = threshold(i, find_hand_thresh(hGrayBlurredImgGel, title='gel thresh', hide=False), grayBlurredImgGel, 'gray blurred gel')
+mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=False), grayBlurredImgNoGel, 'gray blurred no gel')
+mGrayEqBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayEqBlurredImgNoGel, title='equalized no gel thresh', hide=False), grayBlurredImgNoGel, 'gray blurred no gel')
 # cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredImgGel, mGrayBlurredImgNoGel]))
 
 mGrayBlurredImgGel = cv.erode(mGrayBlurredImgGel, np.array((2,2), dtype='uint8'), iterations=1)
@@ -112,7 +114,7 @@ cv.imshow('Segmented gel & no gel contour', np.hstack([imgGel, imgNoGel, eqImgNo
 
 ### Gel ###
 
-# def cvt_n_split(img, method=cv.COLOR_BGR2HSV):
+# def cvt_n_split(img, method):
 #     img = cv.cvtColor(img, method)
 #     x, y, z = cv.split(img)
 #     return [x, y, z, img]
