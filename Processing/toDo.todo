@@ -1,27 +1,22 @@
 Tasks:
-    ☐ Segment hand & gel with usual methods
-        ☐ Compare no gel histogram to gel histogram
+    Hardware:
+        ☐ Reposition LEDs
+        ☐ Weld jumpers
+    Segment hand:
         ☐ Find combinations & orders
-    ☐ Histogram equalization
-    ☐ 2D & 3D histograms
-        ☐ Signal processing to automate
-    ☐ Read about methods
+        ☐ Gamma
+        ☐ Contrast & light
+        ☐ HSV or LAB
+        ☐ Compare no gel to gel histograms
+            ☐ 2D & 3D histograms
+        ✔ Signal processing to automate @done (11/22/2021, 3:16:43 PM)
+        ✔ Histogram equalization @done (11/18/2021, 9:59:10 AM)
+    Research:
         ☐ Backprojection
         ☐ Adaptative gaussian
         ☐ GrabCut
         ☐ Template matching
-    ☐ Research img comparison methods
-
-Methods:
-    ☐ Adaptative gaussian @low
-    ☐ GrabCut @low 
-    ☐ Template matching @low
-
-Histograms:
-    ☐ Equalization @critical 
-    ☐ 2D histograms @high 
-    ☐ 3D histograms @high 
-    ☐ Backprojection @low 
+        ☐ Img comparison methods
 
 Hardware:
     ☐ Wrist line @low 
