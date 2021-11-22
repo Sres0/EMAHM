@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sig
 
-i = 72 # con gel
+i = 68 # con gel
 j = i - 2
 
 def path(i):
@@ -19,6 +19,7 @@ def createImg(i, hide=True):
 
 imgGel = createImg(i)
 imgNoGel = createImg(j)
+eqImgNoGel = createImg(j)
 # imgGel = createImg(i, hide=False)
 # imgNoGel = createImg(j, hide=False)
 # cv.imshow('Segmented gel & no gel', np.hstack([imgGel, imgNoGel]))
@@ -29,10 +30,12 @@ medium_blur = (3,3)
 
 blurredImgGel = cv.blur(imgGel, medium_blur)
 blurredImgNoGel = cv.blur(imgNoGel, medium_blur)
+
 grayBlurredImgGel = cv.blur(cv.cvtColor(blurredImgGel, cv.COLOR_BGR2GRAY), medium_blur)
 grayBlurredImgNoGel = cv.blur(cv.cvtColor(blurredImgNoGel, cv.COLOR_BGR2GRAY), medium_blur)
+grayEqBlurredImgNoGel = cv.equalizeHist(grayBlurredImgNoGel)
 
-def one_d_histogram(img, title, hide=False):
+def one_d_histogram(img, title, hide=True):
 
     if not hide:
         plt.figure()
@@ -80,18 +83,21 @@ def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
 
 hGrayBlurredImgGel = one_d_histogram(grayBlurredImgGel, 'Blurred gray gel', hide=True)
 hGrayBlurredImgNoGel = one_d_histogram(grayBlurredImgNoGel, 'Blurred gray no gel', hide=True)
+hGrayEqBlurredImgNoGel = one_d_histogram(grayEqBlurredImgNoGel, 'Equalized blurred gray no gel', hide=False)
 
 def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY, hide=True):
     _, thresh = cv.threshold(img, mval, 255, method)
     if not hide: cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
     return thresh
 
-mGrayBlurredImgGel = threshold(i, find_hand_thresh(hGrayBlurredImgGel, title='gel thresh', hide=False), grayBlurredImgGel, 'gray blurred gel')
-mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=False), grayBlurredImgNoGel, 'gray blurred no gel')
+mGrayBlurredImgGel = threshold(i, find_hand_thresh(hGrayBlurredImgGel, title='gel thresh', hide=True), grayBlurredImgGel, 'gray blurred gel')
+mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=True), grayBlurredImgNoGel, 'gray blurred no gel')
+mGrayEqBlurredImgNoGel = threshold(i, 185, grayEqBlurredImgNoGel, 'gray equalized blurred no gel')
 # cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredImgGel, mGrayBlurredImgNoGel]))
 
 mGrayBlurredImgGel = cv.erode(mGrayBlurredImgGel, np.array((2,2), dtype='uint8'), iterations=1)
 mGrayBlurredImgNoGel = cv.erode(mGrayBlurredImgNoGel, np.array((2,2), dtype='uint8'), iterations=1)
+mGrayEqBlurredImgNoGel = cv.erode(mGrayEqBlurredImgNoGel, np.array((2,2), dtype='uint8'), iterations=1)
 
 def contour(mask, img, color, i, title, hide=False):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -101,7 +107,8 @@ def contour(mask, img, color, i, title, hide=False):
 
 contour(mGrayBlurredImgGel, imgGel, (255, 255, 255), i, 'gray blurred gel', 1)
 contour(mGrayBlurredImgNoGel, imgNoGel, (255, 255, 255), i, 'gray blurred no gel', 1)
-cv.imshow('Segmented gel & no gel contour', np.hstack([imgGel, imgNoGel]))
+contour(mGrayEqBlurredImgNoGel, eqImgNoGel, (255, 255, 255), i, 'gray blurred no gel', 1)
+cv.imshow('Segmented gel & no gel contour', np.hstack([imgGel, imgNoGel, eqImgNoGel]))
 
 ### Gel ###
 
