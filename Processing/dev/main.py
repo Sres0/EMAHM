@@ -23,16 +23,28 @@ imgNoGel = createImg(j)
 # imgNoGel = createImg(j, hide=False)
 # cv.imshow('Segmented gel & no gel', np.hstack([imgGel, imgNoGel]))
 
+### IMG CORRECTION ###
+def adjust_gamma(img, gamma=1.0):
+	invGamma = 1.0 / gamma
+	table = np.array([((i / 255.0) ** invGamma) * 255
+		for i in np.arange(0, 256)]).astype("uint8")
+	return cv.LUT(img, table)
+
+gammaImgGel = adjust_gamma(imgGel, 1.5)
+# cv.imshow('gamma', gammaImgGel)
+
 ### MASK ###
 
 medium_blur = (3,3)
 big_blur = (5,5)
 
 blurredImgGel = cv.blur(imgGel, big_blur)
-blurredImgNoGel = cv.blur(imgNoGel, big_blur)
+# blurredImgNoGel = cv.blur(imgNoGel, big_blur)
+blurredGammaImgGel = cv.blur(gammaImgGel, big_blur)
 
 grayBlurredImgGel = cv.cvtColor(blurredImgGel, cv.COLOR_BGR2GRAY)
-grayBlurredImgNoGel = cv.cvtColor(blurredImgNoGel, cv.COLOR_BGR2GRAY)
+# grayBlurredImgNoGel = cv.cvtColor(blurredImgNoGel, cv.COLOR_BGR2GRAY)
+grayBlurredGammaImgGel = cv.cvtColor(blurredGammaImgGel, cv.COLOR_BGR2GRAY)
 
 def one_d_histogram(img, title, hide=True):
 
@@ -68,7 +80,7 @@ def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
 
     # peaks
     min_peaks, _ = sig.find_peaks(-y, height=(-500, -1))
-    thresh = next(filter(lambda index: index > 50, min_peaks), None)
+    thresh = next(filter(lambda index: index > 75, min_peaks), None)
     if not hide:
         plt.figure()
         plt.title(title + f' | {thresh}')
@@ -81,7 +93,8 @@ def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
     return thresh
 
 hGrayBlurredImgGel = one_d_histogram(grayBlurredImgGel, 'Blurred gray gel', hide=True)
-hGrayBlurredImgNoGel = one_d_histogram(grayBlurredImgNoGel, 'Blurred gray no gel', hide=True)
+# hGrayBlurredImgNoGel = one_d_histogram(grayBlurredImgNoGel, 'Blurred gray no gel', hide=True)
+hGrayBlurredGammaImgGel = one_d_histogram(grayBlurredGammaImgGel, 'Blurred gamma gray gel', hide=True)
 
 def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY, hide=True):
     _, thresh = cv.threshold(img, mval, 255, method)
@@ -89,11 +102,13 @@ def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY, hide=True):
     return thresh
 
 mGrayBlurredImgGel = threshold(i, find_hand_thresh(hGrayBlurredImgGel, title='gel thresh', hide=False), grayBlurredImgGel, 'gray blurred gel')
-mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=False), grayBlurredImgNoGel, 'gray blurred no gel')
+# mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=False), grayBlurredImgNoGel, 'gray blurred no gel')
+mGrayBlurredGammaImgGel = threshold(i, find_hand_thresh(hGrayBlurredGammaImgGel, title='gamma gel thresh', hide=False), grayBlurredGammaImgGel, 'gray blurred gamma gel')
 # cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredImgGel, mGrayBlurredImgNoGel]))
 
 mGrayBlurredImgGel = cv.erode(mGrayBlurredImgGel, np.array((2,2), dtype='uint8'), iterations=1)
-mGrayBlurredImgNoGel = cv.erode(mGrayBlurredImgNoGel, np.array((2,2), dtype='uint8'), iterations=1)
+# mGrayBlurredImgNoGel = cv.erode(mGrayBlurredImgNoGel, np.array((2,2), dtype='uint8'), iterations=1)
+mGrayBlurredGammaImgGel = cv.erode(mGrayBlurredGammaImgGel, np.array((2,2), dtype='uint8'), iterations=1)
 
 def contour(mask, img, color, i, title, hide=False):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -102,10 +117,13 @@ def contour(mask, img, color, i, title, hide=False):
     return contours
 
 copyImgGel = createImg(i)
+copyImgGel2 = createImg(i)
 copyImgNoGel = createImg(j)
 contour(mGrayBlurredImgGel, copyImgGel, (255, 255, 255), i, 'gray blurred gel', 1)
-contour(mGrayBlurredImgNoGel, copyImgNoGel, (255, 255, 255), j, 'gray blurred no gel', 1)
-cv.imshow('Segmented gel & no gel contour', np.hstack([copyImgGel, copyImgNoGel]))
+# contour(mGrayBlurredImgNoGel, copyImgNoGel, (255, 255, 255), j, 'gray blurred no gel', 1)
+contour(mGrayBlurredGammaImgGel, copyImgGel2, (255, 255, 255), i, 'gray blurred gamma gel', 1)
+# cv.imshow('Segmented gel & no gel contour', np.hstack([copyImgGel, copyImgNoGel]))
+cv.imshow('Segmented gel & gamma gel contour', np.hstack([copyImgGel, copyImgGel2]))
 
 ### Gel ###
 
