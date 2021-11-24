@@ -1,29 +1,44 @@
 Tasks:
+
     Hardware:
-        ☐ Reposition LEDs
-        ☐ Weld jumpers
+        ☐ Reposition LEDs @tomorrow
+        ☐ Weld jumpers @tomorrow
+        ☐ Wrist line @tomorrow
+
+    Bank:
+        ☐ 10 people @tomorrow @friday
+
     Segment hand:
-        ☐ Find combinations & orders
-        ☐ Gamma
-        ☐ Contrast & light
-        ☐ HSV or LAB
-        ☐ Compare no gel to gel histograms
-            ☐ 2D & 3D histograms
-        ✔ Signal processing to automate @done (11/22/2021, 3:16:43 PM)
-        ✔ Histogram equalization @done (11/18/2021, 9:59:10 AM)
+        ☐ Gaussian mixture models https://www.youtube.com/watch?v=__UcukytHuc @critical 
+        ☐ Contrast, light & gamma 2.0 @today 
+        ☐ Equalization 2.0 @today 
+        ☐ HSV, LAB, YCrCb @today 
+        ☐ Textures @today 
+        ☐ 2D histograms @today 
+        ☐ Expectation–maximization algorithm @today 
+        ☐ Automate thresholding @tomorrow
+
+    Gel:
+        ☐ No gel vs gel histograms @friday
+            ☐ HSV
+            ☐ LAB
+            ☐ YCrCb
+            ☐ 2D
+        ☐ Textures @friday
+        ☐ img comparison @friday
+
     Research:
-        ☐ Backprojection
+        ☐ Backprojection https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
+        ☐ Watershed https://www.youtube.com/watch?v=M1mJsJ5M4iE
+        ☐ Textures https://www.youtube.com/watch?v=QmozYygPbZA&t=1s
+        ☐ Template matching https://www.youtube.com/watch?v=PqVH9IHMLss
+        ☐ Automate thresholding https://www.youtube.com/watch?v=3fMgy7VTYH0
         ☐ Adaptative gaussian
         ☐ GrabCut
-        ☐ Template matching
         ☐ Img comparison methods
 
-Hardware:
-    ☐ Wrist line @low 
-    ☐ Rewire circuit @low
-
 Misc:
-    ☐ Reduce img size @low
+    ✔ Reduce img size @low @done (11/24/2021, 12:06:56 PM)
     ☐ Reorganize images @low 
 
 Ideas:
