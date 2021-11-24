@@ -9,6 +9,9 @@ def video():
         _, frame = cap.read()
         cv.imshow('Capture', frame)
         if cv.waitKey(1) & 0xFF == ord('q'):
+            w = int(1280/3)
+            h = int(720/3)
+            frame = cv.resize(frame, (w,h))
             return frame
 
 i = input('>> ')

@@ -7,13 +7,14 @@ i = 52
 def path(i):
     return f'Processing/Bank/Imgs/hand_test_{i}.png'
 
-def createImg(i, hide=True):
+def createImg(i, hide=True, resized=False):
     img = cv.imread(path(i))
-    w = int(1280/3)
-    h = int(720/3)
-    resized = cv.resize(img, (w,h))
+    if not resized:
+        w = int(1280/3)
+        h = int(720/3)
+        img = cv.resize(img, (w,h))
     if not hide: cv.imshow(f'Original {i}', resized)
-    return resized
+    return img
 
 cap = createImg(i, hide=True)
 
