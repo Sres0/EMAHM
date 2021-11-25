@@ -1,2 +1,4 @@
 https://arxiv.org/pdf/2011.07252v3.pdf
 https://arxiv.org/pdf/1803.03317v2.pdf
+https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
+https://www.youtube.com/watch?v=M1mJsJ5M4iE
