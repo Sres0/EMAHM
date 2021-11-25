@@ -1,22 +1,27 @@
 Tasks:
 
     Hardware:
-        ☐ Reposition LEDs @tomorrow
-        ☐ Weld jumpers @tomorrow
-        ☐ Wrist line @tomorrow
+        ✔ Reposition LEDs @tomorrow @done (11/25/2021, 4:00:15 PM)
+        ✔ Weld jumpers @tomorrow @done (11/25/2021, 4:00:17 PM)
+        ☐ Wrist line @tomorrow CHECK SOFTWARE
 
     Bank:
         ☐ 10 people @tomorrow @friday
 
     Segment hand:
-        ☐ Gaussian mixture models https://www.youtube.com/watch?v=__UcukytHuc @critical 
+        ✘ Gaussian mixture models https://www.youtube.com/watch?v=__UcukytHuc @critical @cancelled (11/24/2021, 6:21:19 PM)
         ☐ Contrast, light & gamma 2.0 @today 
         ☐ Equalization 2.0 @today 
+        ☐ Backprojection @today 
+        ☐ Watershed @today 
         ☐ HSV, LAB, YCrCb @today 
-        ☐ Textures @today 
-        ☐ 2D histograms @today 
+        ☐ Textures @today GMM didn't get it right
+        ☐ 2D histograms @today
         ☐ Expectation–maximization algorithm @today 
-        ☐ Automate thresholding @tomorrow
+        ☐ GrabCut @today manually train for specific img (hand position et al)
+        Automate thresholding: @tomorrow
+            ☐ Video
+            ☐ Morph
 
     Gel:
         ☐ No gel vs gel histograms @friday
@@ -24,6 +29,7 @@ Tasks:
             ☐ LAB
             ☐ YCrCb
             ☐ 2D
+        ☐ Template matching @friday
         ☐ Textures @friday
         ☐ img comparison @friday
 
@@ -33,8 +39,8 @@ Tasks:
         ☐ Textures https://www.youtube.com/watch?v=QmozYygPbZA&t=1s
         ☐ Template matching https://www.youtube.com/watch?v=PqVH9IHMLss
         ☐ Automate thresholding https://www.youtube.com/watch?v=3fMgy7VTYH0
+        ☐ GrabCut https://docs.opencv.org/3.4/d8/d83/tutorial_py_grabcut.html 
         ☐ Adaptative gaussian
-        ☐ GrabCut
         ☐ Img comparison methods
 
 Misc:
