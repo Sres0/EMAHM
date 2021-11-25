@@ -16,7 +16,7 @@ def createImg(i, hide=True, resized=False):
     if not hide: cv.imshow(f'Original {i}', resized)
     return img
 
-img = createImg(i, hide=True)
+img = createImg(i, hide=True, resized=True)
 img2 = img.reshape((-1,3))
 
 from sklearn.mixture import GaussianMixture as GMM
