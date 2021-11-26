@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sig
 
-i = 511 # con gel
+i = 510 # con gel
 j = i - 2
 
 def path(i):
@@ -18,22 +18,22 @@ def createImg(i, hide=True, resized=False):
     if not hide: cv.imshow(f'Original {i}', img)
     return img
 
-imgGel = createImg(i)
-imgNoGel = createImg(j)
-# imgGel = createImg(i, hide=False)
-# imgNoGel = createImg(j, hide=False)
-# cv.imshow('Segmented gel & no gel', np.hstack([imgGel, imgNoGel]))
+handGel = createImg(i)
+handNoGel = createImg(j)
+# HandGel = createImg(i, hide=False)
+# HandNoGel = createImg(j, hide=False)
+# cv.imshow('Segmented gel & no gel', np.hstack([HandGel, HandNoGel]))
 
 ### MASK ###
 
 medium_blur = (3,3)
 big_blur = (5,5)
 
-blurredImgGel = cv.blur(imgGel, medium_blur)
-blurredImgNoGel = cv.blur(imgNoGel, medium_blur)
+blurredHandGel = cv.blur(handGel, medium_blur)
+blurredHandNoGel = cv.blur(handNoGel, medium_blur)
 
-grayBlurredImgGel = cv.cvtColor(blurredImgGel, cv.COLOR_BGR2GRAY)
-grayBlurredImgNoGel = cv.cvtColor(blurredImgNoGel, cv.COLOR_BGR2GRAY)
+grayBlurredHandGel = cv.cvtColor(blurredHandGel, cv.COLOR_BGR2GRAY)
+grayBlurredHandNoGel = cv.cvtColor(blurredHandNoGel, cv.COLOR_BGR2GRAY)
 
 def one_d_histogram(img, title, hide=True):
 
@@ -46,11 +46,12 @@ def one_d_histogram(img, title, hide=True):
         plt.xlim([0, 256])
 
     if type(img) == list:
-        for chan in img:
-            hist = cv.calcHist([chan], [0], None, [255], [0, 256])
+        for cnl in img:
+            hist = cv.calcHist([cnl], [0], None, [255], [0, 256])
+            if not hide: plt.plot(hist)
     else:
         hist = cv.calcHist([img], [0], None, [255], [0, 256])
-    if not hide: plt.plot(hist)
+        if not hide: plt.plot(hist)
     hist = [y[0] for y in hist]
 
     return hist
@@ -81,37 +82,42 @@ def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
 
     return thresh
 
-hGrayBlurredImgGel = one_d_histogram(grayBlurredImgGel, 'Blurred gray gel', hide=True)
-hGrayBlurredImgNoGel = one_d_histogram(grayBlurredImgNoGel, 'Blurred gray no gel', hide=True)
+hGrayBlurredHandGel = one_d_histogram(grayBlurredHandGel, 'Blurred gray gel', hide=True)
+hGrayBlurredHandNoGel = one_d_histogram(grayBlurredHandNoGel, 'Blurred gray no gel', hide=True)
 
 def threshold(i, mval, img, channel_name, method=cv.THRESH_BINARY, hide=True):
     _, thresh = cv.threshold(img, mval, 255, method)
     if not hide: cv.imshow(f'Mascara {channel_name} {i} | {mval}', thresh)
     return thresh
 
-mGrayBlurredImgGel = threshold(i, find_hand_thresh(hGrayBlurredImgGel, title='gel thresh', hide=False), grayBlurredImgGel, 'gray blurred gel')
-mGrayBlurredImgNoGel = threshold(i, find_hand_thresh(hGrayBlurredImgNoGel, title='no gel thresh', hide=False), grayBlurredImgNoGel, 'gray blurred no gel')
-cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredImgGel, mGrayBlurredImgNoGel]))
+mGrayBlurredHandGel = threshold(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=True), grayBlurredHandGel, 'gray blurred gel')
+mGrayBlurredHandNoGel = threshold(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=True), grayBlurredHandNoGel, 'gray blurred no gel')
+# cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredHandGel, mGrayBlurredHandNoGel]))
 
-mGrayBlurredImgGel = cv.erode(mGrayBlurredImgGel, np.array((2,2), dtype='uint8'), iterations=1)
-mGrayBlurredImgNoGel = cv.erode(mGrayBlurredImgNoGel, np.array((2,2), dtype='uint8'), iterations=1)
+### PENDING MORPH
 
 def contour(mask, img, color, i, title, hide=False):
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cv.drawContours(img, contours, -1, color, 1)
+    contours = [cnt for cnt in contours if cv.contourArea(cnt) > 1000]
+    for cnt in contours: cv.drawContours(img, [cnt], -1, color, 1)
     if not hide: cv.imshow(f'contorno {title} {i}', img)
-    return contours
+    return [cv.contourArea(cnt) for cnt in contours]
 
-copyImgGel = createImg(i)
-copyImgNoGel = createImg(j)
-contour(mGrayBlurredImgGel, copyImgGel, (255, 255, 255), i, 'gray blurred gel', 1)
-contour(mGrayBlurredImgNoGel, copyImgNoGel, (255, 255, 255), j, 'gray blurred no gel', 1)
-cv.imshow('Segmented gel & no gel contour', np.hstack([copyImgGel, copyImgNoGel]))
+copyHandGel = createImg(i)
+copyHandNoGel = createImg(j)
+aHandGel = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
+aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
+# cv.imshow('Segmented gel & no gel contour', np.hstack([copyHandGel, copyHandNoGel]))
 
 ### Gel ###
 
-hsvGel = cv.cvtColor(imgGel, cv.COLOR_BGR2HSV)
-hsvNoGel = cv.cvtColor(imgNoGel, cv.COLOR_BGR2HSV)
+hGel,sGel,vGel = cv.split(cv.cvtColor(handGel, cv.COLOR_BGR2HSV))
+hsvGel = [hGel,sGel,vGel]
+hNoGel,sNoGel,vNoGel = cv.split(cv.cvtColor(handNoGel, cv.COLOR_BGR2HSV))
+hsvNoGel = [hNoGel,sNoGel,vNoGel]
+
+one_d_histogram(hsvGel, 'HSV Gel', hide=False)
+one_d_histogram(hsvNoGel, 'HSV no Gel', hide=False)
 
 plt.show()
 cv.waitKey(0)
