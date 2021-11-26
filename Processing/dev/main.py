@@ -4,7 +4,7 @@ import numpy as np
 import scipy.signal as sig
 # from save import res
 
-i = 626 # con gel
+i = 614 # con gel
 j = i - 2
 
 def path(i):
@@ -22,7 +22,7 @@ def createImg(i, hide=True, resized=False):
 
 handGel = createImg(i, hide=True)
 handNoGel = createImg(j, hide=True)
-# cv.imshow('Segmented gel & no gel', np.hstack([HandGel, HandNoGel]))
+cv.imshow('Segmented gel & no gel', np.hstack([handGel, handNoGel]))
 
 ### MASK ###
 
@@ -127,7 +127,7 @@ hNoGel,sNoGel,vNoGel = cv.split(imgHsvNoGel)
 hGelVsNoGel = [hGel,hNoGel]
 sGelVsNoGel = [sGel,sNoGel]
 vGelVsNoGel = [vGel,vNoGel]
-# cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
+cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
 
 hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue Gel vs no gel | {i}', min=1, hide=False)
 hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no Gel | {i}', min=1, hide=False)
