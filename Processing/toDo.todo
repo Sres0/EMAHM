@@ -3,35 +3,35 @@ Tasks:
     Hardware:
         ✔ Reposition LEDs @tomorrow @done (11/25/2021, 4:00:15 PM)
         ✔ Weld jumpers @tomorrow @done (11/25/2021, 4:00:17 PM)
-        ☐ Wrist line @tomorrow CHECK SOFTWARE
+        ✔ Wrist line @tomorrow CHECK SOFTWARE @done (11/26/2021, 3:35:12 PM)
 
     Bank:
-        ☐ 10 people @tomorrow @friday
+        ☐ 10 people @monday
 
     Segment hand:
-        ✘ Gaussian mixture models https://www.youtube.com/watch?v=__UcukytHuc @critical @cancelled (11/24/2021, 6:21:19 PM)
-        ☐ Contrast, light & gamma 2.0 @today 
-        ☐ Equalization 2.0 @today 
-        ☐ Backprojection @today 
-        ☐ Watershed @today 
-        ☐ HSV, LAB, YCrCb @today 
-        ☐ Textures @today GMM didn't get it right
-        ☐ 2D histograms @today
-        ☐ Expectation–maximization algorithm @today 
-        ☐ GrabCut @today manually train for specific img (hand position et al)
+        ☐ Backprojection @high 
+        ☐ Watershed @high 
+        ☐ YCrCb trackbars 
+        ☐ Contrast, light & gamma 2.0 @low 
+        ☐ Equalization 2.0 @low
+        ☐ Textures @low  GMM didn't get it right
+        ☐ Expectation–maximization algorithm @low 
+        ☐ GrabCut @low manually train for specific img (hand position et al)
+        ☐ 2D histograms @low 
+        ✔ HSV, LAB, YCrCb @today @done (11/26/2021, 3:39:46 PM)
+        ✔ Gaussian mixture models https://www.youtube.com/watch?v=__UcukytHuc @critical @done (11/26/2021, 3:35:51 PM)
         Automate thresholding: @tomorrow
-            ☐ Video
-            ☐ Morph
+            ☐ Morph @high
 
     Gel:
-        ☐ No gel vs gel histograms @friday
-            ☐ HSV
-            ☐ LAB
-            ☐ YCrCb
+        ✔ No gel vs gel histograms @friday @done (11/26/2021, 3:36:30 PM)
+            ✔ HSV @done (11/26/2021, 3:36:25 PM)
+            ✔ LAB @done (11/26/2021, 3:36:26 PM)
+            ✔ YCrCb @done (11/26/2021, 3:36:26 PM)
             ☐ 2D
-        ☐ Template matching @friday
-        ☐ Textures @friday
-        ☐ img comparison @friday
+        ☐ Template matching @high 
+        ☐ img comparison @high
+        ☐ Textures @low
 
     Research:
         ☐ Backprojection https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
@@ -42,6 +42,11 @@ Tasks:
         ☐ GrabCut https://docs.opencv.org/3.4/d8/d83/tutorial_py_grabcut.html 
         ☐ Adaptative gaussian
         ☐ Img comparison methods
+
+    Report:
+        ☐ Steps
+        ☐ Code user's manual
+        ☐ Lore
 
 Misc:
     ✔ Reduce img size @low @done (11/24/2021, 12:06:56 PM)
