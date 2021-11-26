@@ -4,7 +4,7 @@ import numpy as np
 import scipy.signal as sig
 # from save import res
 
-i = 622 # con gel
+i = 626 # con gel
 j = i - 2
 
 def path(i):
@@ -20,8 +20,8 @@ def createImg(i, hide=True, resized=False):
     if not hide: cv.imshow(f'Original {i}', img)
     return img
 
-handGel = createImg(i, hide=False)
-handNoGel = createImg(j, hide=False)
+handGel = createImg(i, hide=True)
+handNoGel = createImg(j, hide=True)
 # cv.imshow('Segmented gel & no gel', np.hstack([HandGel, HandNoGel]))
 
 ### MASK ###
@@ -43,16 +43,17 @@ def set_histogram(title):
     plt.grid()
     plt.autoscale()
     # plt.xlim([100, 150])
+    # plt.ylim([0, 5000])
 
-def one_d_histogram(img, title, hide=True):
+def one_d_histogram(img, title, hide=True, min=0):
     if not hide: set_histogram(title)
     
     if type(img) == list:
         for cnl in img:
-            hist = cv.calcHist([cnl], [0], None, [255], [0, 256])
+            hist = cv.calcHist([cnl], [0], None, [255], [min, 256])
             if not hide: plt.plot(hist)
     else:
-        hist = cv.calcHist([img], [0], None, [255], [0, 256])
+        hist = cv.calcHist([img], [0], None, [255], [min, 256])
         if not hide: plt.plot(hist)
 
     hist = [y[0] for y in hist] # Retorna el histograma del último canal
@@ -119,59 +120,18 @@ mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255
 ### Gel ###
 
 # imgLabGel = cv.cvtColor(handGel, cv.COLOR_BGR2LAB)
-imgYCrCbGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2YCrCb)
-yGel,crGel,cbGel = cv.split(imgYCrCbGel)
-bgrGel = [yGel,crGel,cbGel]
-# imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
-# hNoGel,sNoGel,vNoGel = cv.split(cv.cvtColor(imgHsvNoGel, cv.COLOR_BGR2HSV))
-# hsvNoGel = [hNoGel,sNoGel,vNoGel]
+imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
+hGel,sGel,vGel = cv.split(imgHsvGel)
+imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
+hNoGel,sNoGel,vNoGel = cv.split(imgHsvNoGel)
+hGelVsNoGel = [hGel,hNoGel]
+sGelVsNoGel = [sGel,sNoGel]
+vGelVsNoGel = [vGel,vNoGel]
 # cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
 
-# copyHandGel2 = handGel.copy()
-# copyHandNoGel2 = handNoGel.copy()
-# hHsvGel = one_d_histogram(hsvGel, f'HSV Gel {i}', hide=False)
-# hHsvNoGel = one_d_histogram(hsvNoGel, f'HSV no Gel {i}', hide=False)
-# hHGel = one_d_histogram(hsvGel[0], f'Hue Gel {i}', hide=True)
-# sHGel = one_d_histogram(hsvGel[1], f'Sat Gel {i}', hide=True)
-# vHGel = one_d_histogram(hsvGel[2], f'Val Gel {i}', hide=True)
-# hNoHGel = one_d_histogram(hsvNoGel[0], f'Hue no Gel {i}', hide=True)
-# sNoHGel = one_d_histogram(hsvNoGel[1], f'Sat no Gel {i}', hide=True)
-# vNoHGel = one_d_histogram(hsvNoGel[2], f'Val no Gel {i}', hide=True)
-
-def nothing(x):
-    pass
-
-cv.namedWindow(f'Gel {i}')
-cv.createTrackbar('Y min', f'Gel {i}', 0, 255, nothing)
-cv.createTrackbar('Y max', f'Gel {i}', 255, 255, nothing)
-cv.createTrackbar('Cr min', f'Gel {i}', 0, 255, nothing)
-cv.createTrackbar('Cr max', f'Gel {i}', 255, 255, nothing)
-cv.createTrackbar('Cb min', f'Gel {i}', 0, 255, nothing)
-cv.createTrackbar('Cb max', f'Gel {i}', 255, 255, nothing)
-
-b_min = 0
-g_min = 0
-r_min = 0
-b_max = 255
-g_max = 255
-r_max = 255
-
-while True:
-    img = handGel.copy()
-    lower = np.array([b_min, g_min, r_min], dtype='uint8')
-    upper = np.array([b_max, g_max, r_max], dtype='uint8')
-    mGel = cv.inRange(imgYCrCbGel, lower, upper)
-    # mGel = get_binary_mask(i, thresh, img, 'green')
-    mGel, aGel = contour(mGel, img, (255, 255, 255), i, f'Gel {i}', hide=True)
-    cv.imshow(f'Gel {i}', img)
-    if cv.waitKey(0) & 0xFF == 'q':
-        break
-    b_min = cv.getTrackbarPos('Y min', f'Gel {i}')
-    b_max = cv.getTrackbarPos('Y max', f'Gel {i}')
-    g_min = cv.getTrackbarPos('Cr min', f'Gel {i}')
-    g_max = cv.getTrackbarPos('Cr max', f'Gel {i}')
-    r_min = cv.getTrackbarPos('Cb min', f'Gel {i}')
-    r_max = cv.getTrackbarPos('Cb max', f'Gel {i}')
+hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue Gel vs no gel | {i}', min=1, hide=False)
+hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no Gel | {i}', min=1, hide=False)
+hVGelVsNoGel = one_d_histogram(vGelVsNoGel, f'Val gel vs no Gel | {i}', min=1, hide=False)
 
 plt.show()
 cv.waitKey(0)
