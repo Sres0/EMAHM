@@ -7,6 +7,7 @@ cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 def video():
     while True:
         _, frame = cap.read()
+        cv.line(frame, (0, int(720*4/5)), (1280, int(720*4/5)), (0, 0, 255), 2) # Línea de muñeca 1/5 de altura img
         cv.imshow('Capture', frame)
         if cv.waitKey(1) & 0xFF == ord('q'):
             w = int(1280/3)
