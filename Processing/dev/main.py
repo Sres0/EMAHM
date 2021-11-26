@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sig
 
-i = 510 # con gel
+i = 402 # con gel
 j = i - 2
 
 def path(i):
@@ -108,24 +108,25 @@ def contour(mask, img, color, i, title, hide=True):
     if not hide: cv.imshow(title, np.hstack([img, blank]))
     return blank, [cv.contourArea(cnt) for cnt in contours]
 
-copyHandGel = createImg(i)
-copyHandNoGel = createImg(j)
+copyHandGel = handGel.copy()
+copyHandNoGel = handNoGel.copy()
 mHandGel, aHandGel = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
 mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
 # cv.imshow('Segmented gel & no gel contour', np.hstack([copyHandGel, copyHandNoGel]))
 
 ### Gel ###
 
-imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
-hGel,sGel,vGel = cv.split(imgHsvGel)
-hsvGel = [hGel,sGel,vGel]
-imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
-hNoGel,sNoGel,vNoGel = cv.split(cv.cvtColor(imgHsvNoGel, cv.COLOR_BGR2HSV))
-hsvNoGel = [hNoGel,sNoGel,vNoGel]
+imgLabGel = cv.cvtColor(handGel, cv.COLOR_BGR2LAB)
+# imgLabGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2LAB)
+lGel,aGel,bGel = cv.split(imgLabGel)
+labGel = [lGel,aGel,bGel]
+# imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
+# hNoGel,sNoGel,vNoGel = cv.split(cv.cvtColor(imgHsvNoGel, cv.COLOR_BGR2HSV))
+# hsvNoGel = [hNoGel,sNoGel,vNoGel]
 # cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
 
-copyHandGel2 = createImg(i)
-copyHandNoGel2 = createImg(j)
+# copyHandGel2 = handGel.copy()
+# copyHandNoGel2 = handNoGel.copy()
 # hHsvGel = one_d_histogram(hsvGel, f'HSV Gel {i}', hide=False)
 # hHsvNoGel = one_d_histogram(hsvNoGel, f'HSV no Gel {i}', hide=False)
 # hHGel = one_d_histogram(hsvGel[0], f'Hue Gel {i}', hide=True)
@@ -139,34 +140,35 @@ def nothing(x):
     pass
 
 cv.namedWindow(f'Gel {i}')
-cv.createTrackbar('Hue min', f'Gel {i}', 0, 255, nothing)
-cv.createTrackbar('Hue max', f'Gel {i}', 255, 255, nothing)
-cv.createTrackbar('Sat min', f'Gel {i}', 0, 255, nothing)
-cv.createTrackbar('Sat max', f'Gel {i}', 255, 255, nothing)
-cv.createTrackbar('Val min', f'Gel {i}', 0, 255, nothing)
-cv.createTrackbar('Val max', f'Gel {i}', 255, 255, nothing)
+cv.createTrackbar('L min', f'Gel {i}', 0, 255, nothing)
+cv.createTrackbar('L max', f'Gel {i}', 255, 255, nothing)
+cv.createTrackbar('A min', f'Gel {i}', 0, 255, nothing)
+cv.createTrackbar('A max', f'Gel {i}', 255, 255, nothing)
+cv.createTrackbar('B min', f'Gel {i}', 0, 255, nothing)
+cv.createTrackbar('B max', f'Gel {i}', 255, 255, nothing)
 
-h_min = 0
-s_min = 0
-v_min = 0
-h_max = 255
-s_max = 255
-v_max = 255
+l_min = 0
+a_min = 0
+b_min = 0
+l_max = 255
+a_max = 255
+b_max = 255
+
 while True:
     img = handGel.copy()
-    lower = np.array([h_min, s_min, v_min], dtype='uint8')
-    upper = np.array([h_max, s_max, v_max], dtype='uint8')
-    mGel = cv.inRange(imgHsvGel, lower, upper)
+    lower = np.array([l_min, a_min, b_min], dtype='uint8')
+    upper = np.array([l_max, a_max, b_max], dtype='uint8')
+    mGel = cv.inRange(imgLabGel, lower, upper)
     mGel, aGel = contour(mGel, img, (255, 255, 255), i, f'Gel {i}', hide=True)
     cv.imshow(f'Gel {i}', img)
     if cv.waitKey(0) & 0xFF == 'q':
         break
-    h_min = cv.getTrackbarPos('Hue min', f'Gel {i}')
-    h_max = cv.getTrackbarPos('Hue max', f'Gel {i}')
-    s_min = cv.getTrackbarPos('Sat min', f'Gel {i}')
-    s_max = cv.getTrackbarPos('Sat max', f'Gel {i}')
-    v_min = cv.getTrackbarPos('Val min', f'Gel {i}')
-    v_max = cv.getTrackbarPos('Val max', f'Gel {i}')
+    l_min = cv.getTrackbarPos('L min', f'Gel {i}')
+    l_max = cv.getTrackbarPos('L max', f'Gel {i}')
+    a_min = cv.getTrackbarPos('A min', f'Gel {i}')
+    a_max = cv.getTrackbarPos('A max', f'Gel {i}')
+    b_min = cv.getTrackbarPos('B min', f'Gel {i}')
+    b_max = cv.getTrackbarPos('B max', f'Gel {i}')
 
 plt.show()
 cv.waitKey(0)
