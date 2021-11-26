@@ -46,6 +46,8 @@ Tasks:
 Misc:
     ✔ Reduce img size @low @done (11/24/2021, 12:06:56 PM)
     ☐ Reorganize images @low 
+    ☐ Automate gel & no gel (only one code)
+    ☐ Reduce variables
 
 Ideas:
     * Create contour of 1st image in 3rd & such
