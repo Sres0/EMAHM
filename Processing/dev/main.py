@@ -2,9 +2,8 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sig
-# from save import res
 
-i = 610 # con gel
+i = 630 # con gel
 j = i - 2
 
 def path(i):
@@ -46,17 +45,6 @@ def set_histogram(title):
     # plt.xlim([100, 150])
     # plt.ylim([0, 5000])
 
-### Backprojection # How'd the machine know the roi
-# def backproject(roiHist, hsv, img):
-#     cv.normalize(roiHist,roiHist,0,1,cv.NORM_MINMAX)
-#     dst = cv.calcBackProject([hsv],[0,1],roiHist,[0,180,0,256],1)
-#     disc = cv.getStructuringElement(cv.MORPH_ELLIPSE,(5,5))
-#     cv.filter2D(dst,-1,disc,dst)
-#     _,thresh = cv.threshold(dst,50,255,0)
-#     thresh = cv.merge((thresh,thresh,thresh))
-#     res = cv.bitwise_and(img,thresh)
-#     cv.imshow('backprojection', np.vstack((img,thresh,res)))
-
 def one_d_histogram(img, title, hide=True, min=0, normalize=False):
     if not hide: set_histogram(title)
     
@@ -85,7 +73,7 @@ def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
     x = np.array(range(0,255))
     # peaks
     min_peaks, _ = sig.find_peaks(-y, height=(-500, -1))
-    thresh = next(filter(lambda index: index > 50, min_peaks), None)
+    thresh = next(filter(lambda index: index > 75, min_peaks), None)
     if not hide: 
         set_histogram(title + f' | {thresh}')
         plt.plot(x,hist)
@@ -101,8 +89,8 @@ def get_binary_mask(i, thresh, img, channel_name, method=cv.THRESH_BINARY, hide=
     if not hide: cv.imshow(f'Mascara {channel_name} {i} | {thresh}', mask)
     return mask
 
-mGrayBlurredHandGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=True), grayBlurredHandGel, 'gray blurred gel')
-mGrayBlurredHandNoGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=True), grayBlurredHandNoGel, 'gray blurred no gel')
+mGrayBlurredHandGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=False), grayBlurredHandGel, 'gray blurred gel')
+mGrayBlurredHandNoGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=False), grayBlurredHandNoGel, 'gray blurred no gel')
 # cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredHandGel, mGrayBlurredHandNoGel]))
 
 ### PENDING MORPH
@@ -114,14 +102,13 @@ def contour(mask, img, color, i, title, hide=True):
     for cnt in contours:
         cv.drawContours(img, [cnt], -1, color, 1)
         cv.drawContours(blank, [cnt], -1, color, -1)
-    # if not hide: cv.imshow(f'contorno {title} {i} y mascara', np.hstack([img, blank]))
     if not hide: cv.imshow(title+f' {i}', np.hstack([img, blank]))
-    return blank, [cv.contourArea(cnt) for cnt in contours]
+    return blank, [cv.contourArea(cnt) for cnt in contours], contours
 
 copyHandGel = handGel.copy()
 copyHandNoGel = handNoGel.copy()
-mHandGel, aHandGel = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
-mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
+mHandGel, aHandGel, gelContours = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
+mHandNoGel, aHandNoGel, noGelContours = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
 # cv.imshow('Segmented gel & no gel contour', np.hstack([copyHandGel, copyHandNoGel]))
 
 ### Gel ###
@@ -149,9 +136,9 @@ lNoGel,aNoGel,bNoGel = cv.split(imgLabNoGel)
 # lGelVsNoGel = [lGel,hNoGel]
 # aGelVsNoGel = [aGel,sNoGel]
 # bGelVsNoGel = [bGel,vNoGel]
-# hLGelVsNoGel = one_d_histogram(lGelVsNoGel, f'L gel vs no gel | {i}', min=1, hide=False)
-# hAGelVsNoGel = one_d_histogram(aGelVsNoGel, f'A gel vs no gel | {i}', min=1, hide=False)
-# hBGelVsNoGel = one_d_histogram(bGelVsNoGel, f'B gel vs no gel | {i}', min=1, hide=False)
+# hLGelVsNoGel = one_d_histogram(lGelVsNoGel, f'L gel vs no gel | {i}', min=1, hide=False, normalize=True)
+# hAGelVsNoGel = one_d_histogram(aGelVsNoGel, f'A gel vs no gel | {i}', min=1, hide=False, normalize=True)
+# hBGelVsNoGel = one_d_histogram(bGelVsNoGel, f'B gel vs no gel | {i}', min=1, hide=False, normalize=True)
 
 # # CLAHE #
 def clahe(img):
@@ -178,28 +165,6 @@ cv.imshow('Originals', np.hstack([cv.bitwise_and(handGel, mHandGel), cv.bitwise_
 hLGelVsNoGel = one_d_histogram(lGelVsNoGel, f'L gel vs no gel | {i}', min=5, hide=True, normalize=True)
 hAGelVsNoGel = one_d_histogram(aGelVsNoGel, f'A gel vs no gel | {i}', min=5, hide=True, normalize=True)
 hBGelVsNoGel = one_d_histogram(bGelVsNoGel, f'B gel vs no gel | {i}', min=5, hide=True, normalize=True)
-
-### Grabcut # time
-
-# mHandGel[mHandGel > 0] = cv.GC_PR_FGD
-# mHandGel[mHandGel == 0] = cv.GC_BGD
-# fgModel = np.zeros((1, 65), dtype="float")
-# bgModel = np.zeros((1, 65), dtype="float")
-# # (mask, bgModel, fgModel) = cv.grabCut(imgHsvGel, mHandGel, None, bgModel, fgModel, mode=cv.GC_INIT_WITH_MASK, iterCount=6)
-# # gCuts = (("Definite Background", cv.GC_BGD),
-# # 	("Probable Background", cv.GC_PR_BGD),
-# # 	("Definite Foreground", cv.GC_FGD),
-# # 	("Probable Foreground", cv.GC_PR_FGD))
-
-# # for (name, val) in gCuts: valueMask = (mask == val).astype("uint8") * 255
-
-# # outputMask = np.where((mask == cv.GC_BGD) | (mask == cv.GC_PR_BGD), 0, 1)
-# # outputMask = (outputMask * 255).astype("uint8")
-# # output = cv.bitwise_and(handGel, handGel, mask=outputMask)
-
-# # cv.imshow("Input", handGel)
-# # cv.imshow("GrabCut Mask", outputMask)
-# # cv.imshow("GrabCut Output", output)
 
 plt.show()
 cv.waitKey(0)
