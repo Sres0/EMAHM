@@ -4,7 +4,7 @@ import numpy as np
 import scipy.signal as sig
 # from save import res
 
-i = 614 # con gel
+i = 618 # con gel
 j = i - 2
 
 def path(i):
@@ -22,7 +22,7 @@ def createImg(i, hide=True, resized=False):
 
 handGel = createImg(i, hide=True)
 handNoGel = createImg(j, hide=True)
-cv.imshow('Segmented gel & no gel', np.hstack([handGel, handNoGel]))
+# cv.imshow('gel & no gel', np.hstack([handGel, handNoGel]))
 
 ### MASK ###
 
@@ -45,15 +45,28 @@ def set_histogram(title):
     # plt.xlim([100, 150])
     # plt.ylim([0, 5000])
 
-def one_d_histogram(img, title, hide=True, min=0):
+### Backprojection # How'd the machine know the roi
+# def backproject(roiHist, hsv, img):
+#     cv.normalize(roiHist,roiHist,0,1,cv.NORM_MINMAX)
+#     dst = cv.calcBackProject([hsv],[0,1],roiHist,[0,180,0,256],1)
+#     disc = cv.getStructuringElement(cv.MORPH_ELLIPSE,(5,5))
+#     cv.filter2D(dst,-1,disc,dst)
+#     _,thresh = cv.threshold(dst,50,255,0)
+#     thresh = cv.merge((thresh,thresh,thresh))
+#     res = cv.bitwise_and(img,thresh)
+#     cv.imshow('backprojection', np.vstack((img,thresh,res)))
+
+def one_d_histogram(img, title, hide=True, min=0, bProject=False):
     if not hide: set_histogram(title)
     
     if type(img) == list:
         for cnl in img:
             hist = cv.calcHist([cnl], [0], None, [255], [min, 256])
+            cv.normalize(hist,hist,0,1,cv.NORM_MINMAX)
             if not hide: plt.plot(hist)
     else:
         hist = cv.calcHist([img], [0], None, [255], [min, 256])
+        cv.normalize(hist,hist,0,1,cv.NORM_MINMAX)
         if not hide: plt.plot(hist)
 
     hist = [y[0] for y in hist] # Retorna el histograma del último canal
@@ -87,10 +100,7 @@ hGrayBlurredHandGel = one_d_histogram(grayBlurredHandGel, 'Blurred gray gel', hi
 hGrayBlurredHandNoGel = one_d_histogram(grayBlurredHandNoGel, 'Blurred gray no gel', hide=True)
 
 def get_binary_mask(i, thresh, img, channel_name, method=cv.THRESH_BINARY, hide=True):
-    if type(thresh) == list:
-        pass
-    else:
-        _, mask = cv.threshold(img, thresh, 255, method)
+    _, mask = cv.threshold(img, thresh, 255, method)
     if not hide: cv.imshow(f'Mascara {channel_name} {i} | {thresh}', mask)
     return mask
 
@@ -118,20 +128,55 @@ mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255
 # cv.imshow('Segmented gel & no gel contour', np.hstack([copyHandGel, copyHandNoGel]))
 
 ### Gel ###
+# # HSV #
+# imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
+# hGel,sGel,vGel = cv.split(imgHsvGel)
+# imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
+# hNoGel,sNoGel,vNoGel = cv.split(imgHsvNoGel)
+# # cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
 
-# imgLabGel = cv.cvtColor(handGel, cv.COLOR_BGR2LAB)
-imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
-hGel,sGel,vGel = cv.split(imgHsvGel)
-imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
-hNoGel,sNoGel,vNoGel = cv.split(imgHsvNoGel)
-hGelVsNoGel = [hGel,hNoGel]
-sGelVsNoGel = [sGel,sNoGel]
-vGelVsNoGel = [vGel,vNoGel]
-cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
+# hGelVsNoGel = [hGel,hNoGel]
+# sGelVsNoGel = [sGel,sNoGel]
+# vGelVsNoGel = [vGel,vNoGel]
+# hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue gel vs no gel | {i}', min=1, hide=False)
+# hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no gel | {i}', min=1, hide=False)
+# hVGelVsNoGel = one_d_histogram(vGelVsNoGel, f'Val gel vs no gel | {i}', min=1, hide=False)
 
-hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue Gel vs no gel | {i}', min=1, hide=False)
-hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no Gel | {i}', min=1, hide=False)
-hVGelVsNoGel = one_d_histogram(vGelVsNoGel, f'Val gel vs no Gel | {i}', min=1, hide=False)
+# LAB #
+imgLabGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2LAB)
+lGel,aGel,bGel = cv.split(imgLabGel)
+imgLabNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
+hNoGel,sNoGel,vNoGel = cv.split(imgLabNoGel)
+# cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
+
+lGelVsNoGel = [lGel,hNoGel]
+aGelVsNoGel = [aGel,sNoGel]
+bGelVsNoGel = [bGel,vNoGel]
+hLGelVsNoGel = one_d_histogram(lGelVsNoGel, f'L gel vs no gel | {i}', min=1, hide=False)
+hAGelVsNoGel = one_d_histogram(aGelVsNoGel, f'A gel vs no gel | {i}', min=1, hide=False)
+hBGelVsNoGel = one_d_histogram(bGelVsNoGel, f'B gel vs no gel | {i}', min=1, hide=False)
+
+### Grabcut
+
+# mHandGel[mHandGel > 0] = cv.GC_PR_FGD
+# mHandGel[mHandGel == 0] = cv.GC_BGD
+# fgModel = np.zeros((1, 65), dtype="float")
+# bgModel = np.zeros((1, 65), dtype="float")
+# # (mask, bgModel, fgModel) = cv.grabCut(imgHsvGel, mHandGel, None, bgModel, fgModel, mode=cv.GC_INIT_WITH_MASK, iterCount=6)
+# # gCuts = (("Definite Background", cv.GC_BGD),
+# # 	("Probable Background", cv.GC_PR_BGD),
+# # 	("Definite Foreground", cv.GC_FGD),
+# # 	("Probable Foreground", cv.GC_PR_FGD))
+
+# # for (name, val) in gCuts: valueMask = (mask == val).astype("uint8") * 255
+
+# # outputMask = np.where((mask == cv.GC_BGD) | (mask == cv.GC_PR_BGD), 0, 1)
+# # outputMask = (outputMask * 255).astype("uint8")
+# # output = cv.bitwise_and(handGel, handGel, mask=outputMask)
+
+# # cv.imshow("Input", handGel)
+# # cv.imshow("GrabCut Mask", outputMask)
+# # cv.imshow("GrabCut Output", output)
 
 plt.show()
 cv.waitKey(0)
