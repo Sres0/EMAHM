@@ -20,9 +20,21 @@ def createImg(i, hide=True, resized=False):
     if not hide: cv.imshow(f'Original {i}', img)
     return img
 
+def split_n_clahe(img):
+    x,y,z = cv.split(img)
+    clahe = cv.createCLAHE(clipLimit=10.0, tileGridSize=(3,3))
+    for chan in (x,y,z):
+        chan = clahe.apply(chan)
+    img = cv.merge((x,y,z))
+    return x,y,z,img
+
 handGel = createImg(i, hide=True)
 handNoGel = createImg(j, hide=True)
-# cv.imshow('gel & no gel', np.hstack([handGel, handNoGel]))
+
+claheGelB, claheGelG, claheGelR, handGel = split_n_clahe(handGel)
+claheNoGelB, claheNoGelG, claheNoGelR, handNoGel = split_n_clahe(handNoGel)
+cv.imshow('gel & no gel', np.hstack([handGel, handNoGel]))
+
 
 ### MASK ###
 
@@ -89,8 +101,8 @@ def get_binary_mask(i, thresh, img, channel_name, method=cv.THRESH_BINARY, hide=
     if not hide: cv.imshow(f'Mascara {channel_name} {i} | {thresh}', mask)
     return mask
 
-mGrayBlurredHandGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=False), grayBlurredHandGel, 'gray blurred gel')
-mGrayBlurredHandNoGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=False), grayBlurredHandNoGel, 'gray blurred no gel')
+mGrayBlurredHandGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=True), grayBlurredHandGel, 'gray blurred gel')
+mGrayBlurredHandNoGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=True), grayBlurredHandNoGel, 'gray blurred no gel')
 # cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredHandGel, mGrayBlurredHandNoGel]))
 
 ### PENDING MORPH
