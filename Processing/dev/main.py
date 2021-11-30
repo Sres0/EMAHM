@@ -20,21 +20,9 @@ def createImg(i, hide=True, resized=False):
     if not hide: cv.imshow(f'Original {i}', img)
     return img
 
-def split_n_clahe(img):
-    x,y,z = cv.split(img)
-    clahe = cv.createCLAHE(clipLimit=10.0, tileGridSize=(3,3))
-    for chan in (x,y,z):
-        chan = clahe.apply(chan)
-    img = cv.merge((x,y,z))
-    return x,y,z,img
-
 handGel = createImg(i, hide=True)
 handNoGel = createImg(j, hide=True)
-
-claheGelB, claheGelG, claheGelR, handGel = split_n_clahe(handGel)
-claheNoGelB, claheNoGelG, claheNoGelR, handNoGel = split_n_clahe(handNoGel)
-cv.imshow('gel & no gel', np.hstack([handGel, handNoGel]))
-
+# cv.imshow('gel & no gel', np.hstack([handGel, handNoGel]))
 
 ### MASK ###
 
@@ -115,68 +103,85 @@ def contour(mask, img, color, i, title, hide=True):
         cv.drawContours(img, [cnt], -1, color, 1)
         cv.drawContours(blank, [cnt], -1, color, -1)
     if not hide: cv.imshow(title+f' {i}', np.hstack([img, blank]))
-    return blank, [cv.contourArea(cnt) for cnt in contours], contours
+    return blank, [cv.contourArea(cnt) for cnt in contours]
 
 copyHandGel = handGel.copy()
 copyHandNoGel = handNoGel.copy()
-mHandGel, aHandGel, gelContours = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
-mHandNoGel, aHandNoGel, noGelContours = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
+mHandGel, aHandGel = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
+mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
 # cv.imshow('Segmented gel & no gel contour', np.hstack([copyHandGel, copyHandNoGel]))
 
 ### Gel ###
-# # HSV #
-# imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
+
+# HSV #
+def split_n_clahe(img):
+    x,y,z = cv.split(img)
+    clahe = cv.createCLAHE(clipLimit=10.0, tileGridSize=(3,3))
+    for chan in (x,y,z):
+        chan = clahe.apply(chan)
+    img = cv.merge((x,y,z))
+    return x,y,z,img
+imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
 # hGel,sGel,vGel = cv.split(imgHsvGel)
-# imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
+imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
 # hNoGel,sNoGel,vNoGel = cv.split(imgHsvNoGel)
-# # cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
+# cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
 
-# hGelVsNoGel = [hGel,hNoGel]
-# sGelVsNoGel = [sGel,sNoGel]
-# vGelVsNoGel = [vGel,vNoGel]
-# hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue gel vs no gel | {i}', min=1, hide=False)
-# hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no gel | {i}', min=1, hide=False)
-# hVGelVsNoGel = one_d_histogram(vGelVsNoGel, f'Val gel vs no gel | {i}', min=1, hide=False)
+claheGelH, claheGelS, claheGelV, claheGelHSV = split_n_clahe(imgHsvGel)
+claheNoGelH, claheNoGelS, claheNoGelV, claheNoGelHSV = split_n_clahe(imgHsvNoGel)
 
-# LAB #
-imgLabGel = cv.bitwise_and(cv.cvtColor(handGel, cv.COLOR_BGR2LAB), mHandGel)
-lGel,aGel,bGel = cv.split(imgLabGel)
-imgLabNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
-lNoGel,aNoGel,bNoGel = cv.split(imgLabNoGel)
-# cv.imshow('hsv', np.hstack([imgLabGel, imgLabNoGel]))
+hGelVsNoGel = [claheGelH,claheNoGelH]
+sGelVsNoGel = [claheGelS,claheNoGelS]
+vGelVsNoGel = [claheGelV,claheNoGelV]
+hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue gel vs no gel | {i}', min=1, hide=False, normalize=True)
+hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no gel | {i}', min=1, hide=False, normalize=True)
+hVGelVsNoGel = one_d_histogram(vGelVsNoGel, f'Val gel vs no gel | {i}', min=1, hide=False, normalize=True)
 
-# lGelVsNoGel = [lGel,hNoGel]
-# aGelVsNoGel = [aGel,sNoGel]
-# bGelVsNoGel = [bGel,vNoGel]
-# hLGelVsNoGel = one_d_histogram(lGelVsNoGel, f'L gel vs no gel | {i}', min=1, hide=False, normalize=True)
-# hAGelVsNoGel = one_d_histogram(aGelVsNoGel, f'A gel vs no gel | {i}', min=1, hide=False, normalize=True)
-# hBGelVsNoGel = one_d_histogram(bGelVsNoGel, f'B gel vs no gel | {i}', min=1, hide=False, normalize=True)
+claheGelHSV = cv.merge((claheGelH, claheGelS, claheGelV))
+claheNoGelHSV = cv.merge((claheNoGelH, claheNoGelS, claheNoGelV))
 
-# # CLAHE #
-def clahe(img):
-    clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-    clahe = clahe.apply(img)
-    return clahe
+# cv.imshow('HSV gel channels', np.hstack([claheGelH, claheGelS, claheGelV]))
+# cv.imshow('HSV no gel channels', np.hstack([claheNoGelH, claheNoGelS, claheNoGelV]))
+# cv.imshow('HSV gel vs no gel', np.hstack([claheGelHSV, claheNoGelHSV]))
+# cv.imshow('Originals', np.hstack([cv.bitwise_and(handGel, mHandGel), cv.bitwise_and(handNoGel, mHandNoGel)]))
 
-claheGelL = clahe(lGel)
-claheGelA = clahe(aGel)
-claheGelB = clahe(bGel)
-claheNoGelL = clahe(lNoGel)
-claheNoGelA = clahe(aNoGel)
-claheNoGelB = clahe(bNoGel)
+def nothing(x):
+    pass
 
-claheGelLAB = cv.merge((claheGelL, claheGelA, claheGelB))
-claheNoGelLAB = cv.merge((claheNoGelL, claheNoGelA, claheNoGelB))
-
-lGelVsNoGel = [claheGelL,claheNoGelL]
-aGelVsNoGel = [claheGelA,claheNoGelA]
-bGelVsNoGel = [claheGelB,claheNoGelB]
-cv.imshow('LAB gel channels', np.hstack([claheGelL, claheGelA, claheGelB]))
-cv.imshow('LAB no gel channels', np.hstack([claheNoGelL, claheNoGelA, claheNoGelB]))
-cv.imshow('Originals', np.hstack([cv.bitwise_and(handGel, mHandGel), cv.bitwise_and(handNoGel, mHandNoGel)]))
-hLGelVsNoGel = one_d_histogram(lGelVsNoGel, f'L gel vs no gel | {i}', min=5, hide=True, normalize=True)
-hAGelVsNoGel = one_d_histogram(aGelVsNoGel, f'A gel vs no gel | {i}', min=5, hide=True, normalize=True)
-hBGelVsNoGel = one_d_histogram(bGelVsNoGel, f'B gel vs no gel | {i}', min=5, hide=True, normalize=True)
-
+### Trackbars ###
 plt.show()
+cv.namedWindow(f'Gel {i}')
+cv.createTrackbar('H min', f'Gel {i}', 0, 255, nothing)
+cv.createTrackbar('H max', f'Gel {i}', 255, 255, nothing)
+cv.createTrackbar('S min', f'Gel {i}', 0, 255, nothing)
+cv.createTrackbar('S max', f'Gel {i}', 255, 255, nothing)
+cv.createTrackbar('V min', f'Gel {i}', 0, 255, nothing)
+cv.createTrackbar('V max', f'Gel {i}', 255, 255, nothing)
+
+h_min = 0
+s_min = 0
+v_min = 0
+h_max = 255
+s_max = 255
+v_max = 255
+
+while True:
+    img = handGel.copy()
+    lower = np.array([h_min, s_min, v_min], dtype='uint8')
+    upper = np.array([h_max, s_max, v_max], dtype='uint8')
+    mGel = cv.inRange(imgHsvGel, lower, upper)
+    # mGel = get_binary_mask(i, thresh, img, 'green')
+    mGel, aGel = contour(mGel, img, (255, 255, 255), i, f'Gel {i}', hide=True)
+    cv.imshow(f'Gel {i}', img)
+    if cv.waitKey(0) & 0xFF == 'q':
+        break
+
+    h_min = cv.getTrackbarPos('H min', f'Gel {i}')
+    h_max = cv.getTrackbarPos('H max', f'Gel {i}')
+    s_min = cv.getTrackbarPos('S min', f'Gel {i}')
+    s_max = cv.getTrackbarPos('S max', f'Gel {i}')
+    v_min = cv.getTrackbarPos('V min', f'Gel {i}')
+    v_max = cv.getTrackbarPos('V max', f'Gel {i}')
+
+# plt.show()
 cv.waitKey(0)
