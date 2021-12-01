@@ -114,11 +114,9 @@ def find_gel_percentage(hHue, handGel, hsvGel, aHandGel, hide=True, title='Prese
         plt.plot(hThreshMax,hHue[0][hThreshMax], "x")
     return percentage
 
-
-w = int(1280/3)
-h = int(720/3)
-
 def text(img, percentage):
+    w = int(1280/3)
+    h = int(720/3)
     if percentage >= 80: color = (0,255,0)
     else: color = (0,0,255)
     if percentage == 0: text = 'Error: porcentaje de gel no identificado.'
@@ -178,10 +176,10 @@ while 1:
         cv.waitKey(0)
         break
     except ValueError:
-        id_user = input('Error: digite un valor adecuado. Presione "x" para salir o un número válido\n>> ')
+        id_user = input('Error: digite un valor adecuado. Presione "x" para salir o una identificación válida\n>> ')
         if id_user == 'x': break
     except FileNotFoundError:
-        id_user = input('Error: el archivo no existe. Presione "x" para salir o un número válido\n>> ')
+        id_user = input('Error: el archivo no existe. Presione "x" para salir o una identificación válida\n>> ')
         if id_user == 'x': break
     except NameError:
         id_user = input('Ingrese identificación de usuario: ')
