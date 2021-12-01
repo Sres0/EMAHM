@@ -147,7 +147,7 @@ def show_gel_percentage(id,i):
     imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
     imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
 
-    claheGelH, claheGelS, claheGelV, claheGelHSV = split_n_clahe(imgHsvGel)
+    claheGelH, claheGelS, claheGelV, imgHsvGel = split_n_clahe(imgHsvGel)
     claheNoGelH, claheNoGelS, claheNoGelV, claheNoGelHSV = split_n_clahe(imgHsvNoGel)
 
     hGelVsNoGel = [claheGelH,claheNoGelH]
