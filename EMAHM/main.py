@@ -140,10 +140,8 @@ def show_gel_percentage(id,i):
     hGrayBlurredHandNoGel = one_d_histogram(grayBlurredHandNoGel, 'Blurred gray no gel', hide=True)
     mGrayBlurredHandGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=True), grayBlurredHandGel, 'gray blurred gel')
     mGrayBlurredHandNoGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=True), grayBlurredHandNoGel, 'gray blurred no gel')
-    copyHandGel = handGel.copy()
-    copyHandNoGel = handNoGel.copy()
-    mHandGel, aHandGel = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
-    mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
+    mHandGel, aHandGel = contour(mGrayBlurredHandGel, handGel.copy(), (255, 255, 255), i, 'gray blurred gel', hide=True)
+    mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, handNoGel.copy(), (255, 255, 255), j, 'gray blurred no gel', hide=True)
 
     ### Gel mask ###
     imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
