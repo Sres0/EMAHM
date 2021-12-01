@@ -153,7 +153,6 @@ def show_gel_percentage(id,i):
     hGelVsNoGel = [claheGelH,claheNoGelH]
     hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue gel vs no gel | {i}', min=1, hide=True, normalize=True)
 
-    imgHsvGel = cv.merge((claheGelH, claheGelS, claheGelV))
     gelPercentage = find_gel_percentage(hHGelVsNoGel, handGel, imgHsvGel, aHandGel, hide=True)
     return gelPercentage
 
