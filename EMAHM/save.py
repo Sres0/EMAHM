@@ -3,7 +3,7 @@ import cv2 as cv
 h = int(720/2)
 w = int(1280/2)
 
-cap = cv.VideoCapture(0, cv.CAP_DSHOW)
+cap = cv.VideoCapture(1, cv.CAP_DSHOW)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, h)
 cap.set(cv.CAP_PROP_FRAME_WIDTH, w)
 
