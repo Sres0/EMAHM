@@ -161,8 +161,7 @@ def show_gel_percentage(id,i):
 
 while 1:
     try:
-        if not id_user:
-            id_user = input('Ingrese identificación de usuario: ')
+        if not id_user: id_user = input('Ingrese identificación de usuario: ')
         i = 3
         j = 4
         for num in range(1,5):
