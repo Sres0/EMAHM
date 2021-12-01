@@ -2,14 +2,12 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as sig
-from scipy.optimize import fsolve
 
-i = 635 # con gel
+results = []
+i = 634 # con gel
 j = i - 2
 
-def path(i):
-    # return f'Processing/reporte_final/{i}.png'
-    return f'Processing/Bank/Imgs/hand_test_{i}.png'
+def path(i): return f'Processing/Bank/Imgs/hand_test_{i}.png'
 
 def createImg(i, hide=True, resized=False):
     img = cv.imread(path(i))
@@ -23,7 +21,6 @@ def createImg(i, hide=True, resized=False):
 
 handGel = createImg(i, hide=True)
 handNoGel = createImg(j, hide=True)
-# cv.imshow('gel & no gel', np.hstack([handGel, handNoGel]))
 
 ### MASK ###
 
@@ -43,8 +40,6 @@ def set_histogram(title):
     plt.ylabel('Pixels')
     plt.grid()
     plt.autoscale()
-    # plt.xlim([100, 150])
-    # plt.ylim([0, 5000])
 
 def one_d_histogram(img, title, hide=True, min=1, normalize=False):
     hist = []
@@ -62,7 +57,7 @@ def one_d_histogram(img, title, hide=True, min=1, normalize=False):
         if not hide: plt.plot(hist)
         hist = [y[0] for y in hist] # Retorna el histograma del último canal
 
-    return hist 
+    return hist
 
 def find_hand_thresh(hist, fs=60, hide=True, title='hand threshold'):
     # outliers
@@ -93,18 +88,17 @@ def get_binary_mask(i, thresh, img, channel_name, method=cv.THRESH_BINARY, hide=
 
 mGrayBlurredHandGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandGel, title='gel thresh', hide=True), grayBlurredHandGel, 'gray blurred gel')
 mGrayBlurredHandNoGel = get_binary_mask(i, find_hand_thresh(hGrayBlurredHandNoGel, title='no gel thresh', hide=True), grayBlurredHandNoGel, 'gray blurred no gel')
-# cv.imshow('Segmented gel & no gel mask', np.hstack([mGrayBlurredHandGel, mGrayBlurredHandNoGel]))
-
-### PENDING MORPH
 
 def contour(mask, img, color, i, title, hide=True):
     blank = np.zeros((img.shape), dtype=np.uint8)
     contours, _ = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    contours = [cnt for cnt in contours if cv.contourArea(cnt) > 5000]
-    for cnt in contours:
-        cv.drawContours(img, [cnt], -1, color, 1)
+    contours = [cnt for cnt in contours if cv.contourArea(cnt) > 3000]
+    for cnt in contours: 
         cv.drawContours(blank, [cnt], -1, color, -1)
-    if not hide: cv.imshow(title+f' {i}', img)
+        cv.drawContours(img, [cnt], -1, color, 1)
+    if not hide:
+        cv.imshow(title+f' {i}', np.hstack([img,handNoGel]))
+        results.append(img)
     areas = [cv.contourArea(cnt) for cnt in contours]
     return blank, sum(areas)
 
@@ -112,9 +106,8 @@ copyHandGel = handGel.copy()
 copyHandNoGel = handNoGel.copy()
 mHandGel, aHandGel = contour(mGrayBlurredHandGel, copyHandGel, (255, 255, 255), i, 'gray blurred gel', hide=True)
 mHandNoGel, aHandNoGel = contour(mGrayBlurredHandNoGel, copyHandNoGel, (255, 255, 255), j, 'gray blurred no gel', hide=True)
-# cv.imshow('Segmented gel & no gel contour', np.hstack([copyHandGel, copyHandNoGel]))
 
-### Gel ###
+### GEL ###
 
 # HSV #
 def split_n_clahe(img):
@@ -124,26 +117,20 @@ def split_n_clahe(img):
         chan = clahe.apply(chan)
     img = cv.merge((x,y,z))
     return x,y,z,img
+
 imgHsvGel = cv.cvtColor(cv.bitwise_and(handGel, mHandGel), cv.COLOR_BGR2HSV)
-# hGel,sGel,vGel = cv.split(imgHsvGel)
 imgHsvNoGel = cv.cvtColor(cv.bitwise_and(handNoGel, mHandNoGel), cv.COLOR_BGR2HSV)
-# hNoGel,sNoGel,vNoGel = cv.split(imgHsvNoGel)
-# cv.imshow('hsv', np.hstack([imgHsvGel, imgHsvNoGel]))
 
 claheGelH, claheGelS, claheGelV, claheGelHSV = split_n_clahe(imgHsvGel)
 claheNoGelH, claheNoGelS, claheNoGelV, claheNoGelHSV = split_n_clahe(imgHsvNoGel)
 
 hGelVsNoGel = [claheGelH,claheNoGelH]
-sGelVsNoGel = [claheGelS,claheNoGelS]
-vGelVsNoGel = [claheGelV,claheNoGelV]
 hHGelVsNoGel = one_d_histogram(hGelVsNoGel, f'Hue gel vs no gel | {i}', min=1, hide=True, normalize=True)
-hSGelVsNoGel = one_d_histogram(sGelVsNoGel, f'Sat gel vs no gel | {i}', min=1, hide=True, normalize=True)
-hVGelVsNoGel = one_d_histogram(vGelVsNoGel, f'Val gel vs no gel | {i}', min=1, hide=True, normalize=True)
 
 imgHsvgel = cv.merge((claheGelH, claheGelS, claheGelV))
 imgHsvNoGel = cv.merge((claheNoGelH, claheNoGelS, claheNoGelV))
 
-def find_gel_thresh(hHue, hSat, fs=60, hide=True, title='gel threshold'):
+def find_gel_percentage(hHue, hide=True, title='Presencia de gel'):
     hThreshMax = 254
     diff = []
     x0 = []
@@ -153,14 +140,16 @@ def find_gel_thresh(hHue, hSat, fs=60, hide=True, title='gel threshold'):
         if y1 > 0.1: x0.append(x)
     for arg in np.argwhere(np.diff(diff)).flatten():
         if arg in x0: hThreshMax = arg + 1
-    lower = np.array([10, 0, 0], dtype='uint8')
+    lower = np.array([10, 10, 10], dtype='uint8')
     upper = np.array([hThreshMax, 255, 255], dtype='uint8')
     if hThreshMax != 254:
         copyHandGel = handGel.copy()
         mGel = cv.inRange(imgHsvGel, lower, upper)
-        mGel, aGel = contour(mGel, copyHandGel, (0, 255, 0), i, 'Gel', hide=True)
-        print('Porcentaje lavado:',round((aGel*100)/aHandGel,2),'%')
+        mGel, aGel = contour(mGel, copyHandGel, (255, 255, 255), i, title, hide=False)
+        percentage = round((aGel*100)/aHandGel,2)
+        print('Porcentaje lavado:',percentage,'%')
     else:
+        percentage=0
         print('Error: porcentaje de gel no identificado.')
     if not hide: 
         set_histogram(title)
@@ -168,57 +157,9 @@ def find_gel_thresh(hHue, hSat, fs=60, hide=True, title='gel threshold'):
         plt.plot(x,hHue[0])
         plt.plot(x,hHue[1])
         plt.plot(hThreshMax,hHue[0][hThreshMax], "x")
-    return lower, upper
+    return percentage
 
-find_gel_thresh(hHGelVsNoGel, hSGelVsNoGel, hide=True)
-
-#     # mGel = get_binary_mask(i, thresh, img, 'green')
-#     mGel, aGel = contour(mGel, img, (255, 255, 255), i, f'Gel {i}', hide=True)
-#     cv.imshow(f'Gel {i}', img)
-
-# cv.imshow('HSV gel channels', np.hstack([claheGelH, claheGelS, claheGelV]))
-# cv.imshow('HSV no gel channels', np.hstack([claheNoGelH, claheNoGelS, claheNoGelV]))
-# cv.imshow('HSV gel vs no gel', np.hstack([claheGelHSV, claheNoGelHSV]))
-# cv.imshow('Originals', np.hstack([cv.bitwise_and(handGel, mHandGel), cv.bitwise_and(handNoGel, mHandNoGel)]))
-
-
-
-### Trackbars ###
-# def nothing(x):
-#     pass
-# plt.show()
-# cv.namedWindow(f'Gel {i}')
-# cv.createTrackbar('H min', f'Gel {i}', 0, 255, nothing)
-# cv.createTrackbar('H max', f'Gel {i}', 255, 255, nothing)
-# cv.createTrackbar('S min', f'Gel {i}', 0, 255, nothing)
-# cv.createTrackbar('S max', f'Gel {i}', 255, 255, nothing)
-# cv.createTrackbar('V min', f'Gel {i}', 0, 255, nothing)
-# cv.createTrackbar('V max', f'Gel {i}', 255, 255, nothing)
-
-# h_min = 0
-# s_min = 0
-# v_min = 0
-# h_max = 255
-# s_max = 255
-# v_max = 255
-
-# while True:
-#     img = handGel.copy()
-#     lower = np.array([h_min, s_min, v_min], dtype='uint8')
-#     upper = np.array([h_max, s_max, v_max], dtype='uint8')
-#     mGel = cv.inRange(imgHsvGel, lower, upper)
-#     # mGel = get_binary_mask(i, thresh, img, 'green')
-#     mGel, aGel = contour(mGel, img, (255, 255, 255), i, f'Gel {i}', hide=True)
-#     cv.imshow(f'Gel {i}', img)
-#     if cv.waitKey(0) & 0xFF == 'q':
-#         break
-
-#     h_min = cv.getTrackbarPos('H min', f'Gel {i}')
-#     h_max = cv.getTrackbarPos('H max', f'Gel {i}')
-#     s_min = cv.getTrackbarPos('S min', f'Gel {i}')
-#     s_max = cv.getTrackbarPos('S max', f'Gel {i}')
-#     v_min = cv.getTrackbarPos('V min', f'Gel {i}')
-#     v_max = cv.getTrackbarPos('V max', f'Gel {i}')
+gelPercentage = find_gel_percentage(hHGelVsNoGel, hide=True)
 
 plt.show()
 cv.waitKey(0)
