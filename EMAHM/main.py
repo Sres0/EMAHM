@@ -175,9 +175,6 @@ while 1:
         cv.imshow('Palma', results[1])
         cv.waitKey(0)
         break
-    except ValueError:
-        id_user = input('Error: digite un valor adecuado. Presione "x" para salir o una identificación válida\n>> ')
-        if id_user == 'x': break
     except FileNotFoundError:
         id_user = input('Error: el archivo no existe. Presione "x" para salir o una identificación válida\n>> ')
         if id_user == 'x': break
