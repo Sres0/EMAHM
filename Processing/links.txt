@@ -2,3 +2,10 @@ https://arxiv.org/pdf/2011.07252v3.pdf
 https://arxiv.org/pdf/1803.03317v2.pdf
 https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
 https://www.youtube.com/watch?v=M1mJsJ5M4iE
+https://stackoverflow.com/questions/11420748/setting-camera-parameters-in-opencv-python
+https://stackoverflow.com/questions/61016954/controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python | future cam work
+https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html | clahe
+https://www.pyimagesearch.com/2015/12/07/local-binary-patterns-with-python-opencv/ | train model w lbp
+https://stackoverflow.com/questions/28766692/intersection-of-two-graphs-in-python-find-the-x-value | line intersection
+https://www.pyimagesearch.com/2021/01/19/opencv-bitwise-and-or-xor-and-not/ | bitwise
+https://stackoverflow.com/questions/36077266/how-do-i-raise-a-filenotfounderror-properly | filenotfounderror
