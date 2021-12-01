@@ -162,10 +162,10 @@ def show_gel_percentage(id,i):
 while 1:
     try:
         if not id_user: id_user = input('Ingrese identificación de usuario: ')
-        i = 3
-        j = 4
         for num in range(1,5):
             if not os.path.exists(path(id_user,num)): raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path(id_user,num))
+        i = 3
+        j = 4
         back = show_gel_percentage(id_user,i)
         palm = show_gel_percentage(id_user,j)
         text(results[0],back)
