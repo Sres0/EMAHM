@@ -162,15 +162,15 @@ def show_gel_percentage(id,i):
     return gelPercentage
 
 while 1:
-    try: 
-        id = int(input('Ingrese identificación de usuario: '))
+    try:
+        if not id_user:
+            id_user = input('Ingrese identificación de usuario: ')
         i = 3
         j = 4
         for num in range(1,5):
-            if not os.path.exists(path(id,num)):
-                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path(id,num))
-        back = show_gel_percentage(id,i)
-        palm = show_gel_percentage(id,j)
+            if not os.path.exists(path(id_user,num)): raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path(id_user,num))
+        back = show_gel_percentage(id_user,i)
+        palm = show_gel_percentage(id_user,j)
         text(results[0],back)
         text(results[1],palm)
         cv.imshow('Dorso', results[0])
@@ -178,8 +178,10 @@ while 1:
         cv.waitKey(0)
         break
     except ValueError:
-        id = input('Error: digite un valor adecuado. Presione "x" para salir\n>> ')
-        if id == 'x': break
+        id_user = input('Error: digite un valor adecuado. Presione "x" para salir o un número válido\n>> ')
+        if id_user == 'x': break
     except FileNotFoundError:
-        id = input('Error: digite un valor adecuado. Presione "x" para salir\n>> ')
-        if id == 'x': break
+        id_user = input('Error: el archivo no existe. Presione "x" para salir o un número válido\n>> ')
+        if id_user == 'x': break
+    except NameError:
+        id_user = input('Ingrese identificación de usuario: ')
