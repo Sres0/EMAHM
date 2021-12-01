@@ -179,3 +179,6 @@ while 1:
         if id_user == 'x': break
     except NameError:
         id_user = input('Ingrese identificación de usuario: ')
+    except:
+        id_user = input('Error. Presione "x" para salir o una identificación válida\n>> ')
+        if id_user == 'x': break
