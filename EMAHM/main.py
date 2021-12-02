@@ -169,6 +169,7 @@ while 1:
         text(results[1],palm)
         cv.imshow('Dorso', results[0])
         cv.imshow('Palma', results[1])
+        plt.show()
         cv.waitKey(0)
         break
     except FileNotFoundError:
